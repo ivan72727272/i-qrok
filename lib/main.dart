@@ -16,7 +16,13 @@ class ECroApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
         useMaterial3: true,
-        fontFamily: 'Roboto', // Default font, simple and clean
+        fontFamily: 'Roboto',
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          },
+        ),
       ),
       home: const SplashScreen(),
     );

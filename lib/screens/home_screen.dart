@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'belajar_huruf_screen.dart';
 import 'belajar_iqra_screen.dart';
 import 'latihan_screen.dart';
@@ -9,98 +10,131 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF1F8E9),
-      appBar: AppBar(
-        title: const Text(
-          'E-Cro',
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final bool shouldPop = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text('Keluar Aplikasi?', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+            content: const Text('Apakah kamu yakin ingin keluar dari E-Cro?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Batal', style: TextStyle(fontSize: 16)),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Keluar', style: TextStyle(fontSize: 16)),
+              ),
+            ],
+          ),
+        ) ?? false;
+        
+        if (shouldPop) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF1F8E9),
+        appBar: AppBar(
+          title: const Text(
+            'E-Cro',
+            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+          ),
+          centerTitle: true,
+          backgroundColor: const Color(0xFF81C784),
+          foregroundColor: Colors.white,
+          elevation: 0,
         ),
-        centerTitle: true,
-        backgroundColor: const Color(0xFF81C784),
-        foregroundColor: Colors.white,
-        elevation: 4,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            const Text(
-              'Belajar Iqra',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2E7D32),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              const Text(
+                'Belajar Iqra',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2E7D32),
+                ),
               ),
-            ),
-            const Text(
-              'Pilih menu di bawah',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.black54,
+              const Text(
+                'Pilih menu di bawah',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black54,
+                ),
               ),
-            ),
-            const SizedBox(height: 40),
-            // Menu Grid 2x2
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-                children: [
-                  _buildMenuButton(
-                    context,
-                    title: 'Belajar\nHuruf',
-                    icon: Icons.abc_rounded,
-                    color: Colors.orangeAccent,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const BelajarHurufScreen()),
-                      );
-                    },
-                  ),
-                  _buildMenuButton(
-                    context,
-                    title: 'Belajar\nIqra',
-                    icon: Icons.menu_book_rounded,
-                    color: Colors.lightBlueAccent,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const BelajarIqraScreen()),
-                      );
-                    },
-                  ),
-                  _buildMenuButton(
-                    context,
-                    title: 'Latihan',
-                    icon: Icons.edit_note_rounded,
-                    color: Colors.lightGreenAccent.shade700,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LatihanScreen()),
-                      );
-                    },
-                  ),
-                  _buildMenuButton(
-                    context,
-                    title: 'Tentang',
-                    icon: Icons.info_outline_rounded,
-                    color: Colors.pinkAccent.shade100,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const TentangScreen()),
-                      );
-                    },
-                  ),
-                ],
+              const SizedBox(height: 40),
+              // Menu Grid 2x2
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  children: [
+                    _buildMenuButton(
+                      context,
+                      title: 'Belajar\nHuruf',
+                      icon: Icons.abc_rounded,
+                      color: Colors.orangeAccent,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const BelajarHurufScreen()),
+                        );
+                      },
+                    ),
+                    _buildMenuButton(
+                      context,
+                      title: 'Belajar\nIqra',
+                      icon: Icons.menu_book_rounded,
+                      color: Colors.lightBlueAccent,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const BelajarIqraScreen()),
+                        );
+                      },
+                    ),
+                    _buildMenuButton(
+                      context,
+                      title: 'Latihan',
+                      icon: Icons.edit_note_rounded,
+                      color: Colors.lightGreenAccent.shade700,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LatihanScreen()),
+                        );
+                      },
+                    ),
+                    _buildMenuButton(
+                      context,
+                      title: 'Tentang',
+                      icon: Icons.info_outline_rounded,
+                      color: Colors.pinkAccent.shade100,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const TentangScreen()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
