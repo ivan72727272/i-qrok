@@ -8,8 +8,8 @@ class LatihanScreen extends StatefulWidget {
 }
 
 class _LatihanScreenState extends State<LatihanScreen> {
-  // Data statis untuk soal (5 Soal)
-  final List<Map<String, dynamic>> _quizData = [
+  // Data statis utama untuk soal
+  final List<Map<String, dynamic>> _masterQuizData = [
     {
       'question': 'ب',
       'options': ['Ta', 'Ba', 'Jim'],
@@ -37,6 +37,8 @@ class _LatihanScreenState extends State<LatihanScreen> {
     },
   ];
 
+  late List<Map<String, dynamic>> _activeQuizData;
+
   int _currentIndex = 0;
   int _score = 0;
   bool _hasAnswered = false;
@@ -44,10 +46,40 @@ class _LatihanScreenState extends State<LatihanScreen> {
   bool _isFirstAttempt = true;
   bool _isFinished = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _startNewQuiz();
+  }
+
+  void _startNewQuiz() {
+    // Menyalin data master agar bisa diacak tanpa mengubah aslinya
+    _activeQuizData = _masterQuizData.map((item) {
+      List<String> options = List<String>.from(item['options']);
+      options.shuffle(); // Acak posisi jawaban
+      return {
+        'question': item['question'],
+        'options': options,
+        'answer': item['answer'],
+      };
+    }).toList();
+
+    _activeQuizData.shuffle(); // Acak urutan soal
+
+    setState(() {
+      _currentIndex = 0;
+      _score = 0;
+      _hasAnswered = false;
+      _isCorrect = false;
+      _isFirstAttempt = true;
+      _isFinished = false;
+    });
+  }
+
   void _checkAnswer(String selectedAnswer) {
     if (_hasAnswered && _isCorrect) return; // Jika sudah benar, jangan ubah jawaban
 
-    String correctAnswer = _quizData[_currentIndex]['answer'];
+    String correctAnswer = _activeQuizData[_currentIndex]['answer'];
     bool isAnswerCorrect = selectedAnswer == correctAnswer;
     
     setState(() {
@@ -71,23 +103,12 @@ class _LatihanScreenState extends State<LatihanScreen> {
       _isCorrect = false;
       _isFirstAttempt = true;
       
-      if (_currentIndex < _quizData.length - 1) {
+      if (_currentIndex < _activeQuizData.length - 1) {
         _currentIndex++;
       } else {
         // Latihan selesai
         _isFinished = true;
       }
-    });
-  }
-
-  void _resetQuiz() {
-    setState(() {
-      _currentIndex = 0;
-      _score = 0;
-      _hasAnswered = false;
-      _isCorrect = false;
-      _isFirstAttempt = true;
-      _isFinished = false;
     });
   }
 
@@ -154,7 +175,7 @@ class _LatihanScreenState extends State<LatihanScreen> {
               ),
               const SizedBox(height: 60),
               ElevatedButton.icon(
-                onPressed: _resetQuiz,
+                onPressed: _startNewQuiz,
                 icon: const Icon(Icons.refresh, size: 30),
                 label: const Text(
                   'Ulangi Latihan',
@@ -183,7 +204,7 @@ class _LatihanScreenState extends State<LatihanScreen> {
       return _buildResultScreen();
     }
 
-    final currentQuestion = _quizData[_currentIndex];
+    final currentQuestion = _activeQuizData[_currentIndex];
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1F8E9), // Warna hijau pastel terang yang lembut
@@ -226,7 +247,7 @@ class _LatihanScreenState extends State<LatihanScreen> {
             children: [
               // Indikator Soal
               Text(
-                'Soal ${_currentIndex + 1} / ${_quizData.length}',
+                'Soal ${_currentIndex + 1} / ${_activeQuizData.length}',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 20,
