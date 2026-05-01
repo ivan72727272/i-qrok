@@ -54,86 +54,92 @@ class HomeScreen extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              const Text(
-                'Belajar Iqra',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2E7D32),
-                ),
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Belajar Iqra',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2E7D32),
+                    ),
+                  ),
+                  const Text(
+                    'Pilih menu di bawah',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  // Menu Grid 2x2
+                  Expanded(
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                      childAspectRatio: 1.0,
+                      children: [
+                        _buildMenuButton(
+                          context,
+                          title: 'Belajar\nHuruf',
+                          icon: Icons.abc_rounded,
+                          color: Colors.orangeAccent,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const BelajarHurufScreen()),
+                            );
+                          },
+                        ),
+                        _buildMenuButton(
+                          context,
+                          title: 'Belajar\nIqra',
+                          icon: Icons.menu_book_rounded,
+                          color: Colors.lightBlueAccent,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const BelajarIqraScreen()),
+                            );
+                          },
+                        ),
+                        _buildMenuButton(
+                          context,
+                          title: 'Latihan',
+                          icon: Icons.edit_note_rounded,
+                          color: Colors.lightGreenAccent.shade700,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LatihanScreen()),
+                            );
+                          },
+                        ),
+                        _buildMenuButton(
+                          context,
+                          title: 'Tentang',
+                          icon: Icons.info_outline_rounded,
+                          color: Colors.pinkAccent.shade100,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const TentangScreen()),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const Text(
-                'Pilih menu di bawah',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 40),
-              // Menu Grid 2x2
-              Expanded(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  children: [
-                    _buildMenuButton(
-                      context,
-                      title: 'Belajar\nHuruf',
-                      icon: Icons.abc_rounded,
-                      color: Colors.orangeAccent,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const BelajarHurufScreen()),
-                        );
-                      },
-                    ),
-                    _buildMenuButton(
-                      context,
-                      title: 'Belajar\nIqra',
-                      icon: Icons.menu_book_rounded,
-                      color: Colors.lightBlueAccent,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const BelajarIqraScreen()),
-                        );
-                      },
-                    ),
-                    _buildMenuButton(
-                      context,
-                      title: 'Latihan',
-                      icon: Icons.edit_note_rounded,
-                      color: Colors.lightGreenAccent.shade700,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LatihanScreen()),
-                        );
-                      },
-                    ),
-                    _buildMenuButton(
-                      context,
-                      title: 'Tentang',
-                      icon: Icons.info_outline_rounded,
-                      color: Colors.pinkAccent.shade100,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const TentangScreen()),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

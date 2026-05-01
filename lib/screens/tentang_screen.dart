@@ -15,9 +15,11 @@ class TentangScreen extends StatelessWidget {
         elevation: 0,
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -113,6 +115,7 @@ class TentangScreen extends StatelessWidget {
               ),
             ],
           ),
+        ),
         ),
       ),
     );
