@@ -6,7 +6,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F8E9), // Hijau sangat muda/putih kehijauan
+      backgroundColor: const Color(0xFFF1F8E9),
       appBar: AppBar(
         title: const Text(
           'E-Cro',
@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
         elevation: 4,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
             const SizedBox(height: 20),
@@ -37,29 +37,45 @@ class HomeScreen extends StatelessWidget {
                 color: Colors.black54,
               ),
             ),
-            const Spacer(),
-            // Tombol Belajar Huruf
-            _buildMenuButton(
-              context,
-              title: 'Belajar Huruf',
-              icon: Icons.abc_rounded,
-              color: Colors.orangeAccent,
-              onPressed: () {
-                // Placeholder
-              },
+            const SizedBox(height: 40),
+            // Menu Grid 2x2
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
+                children: [
+                  _buildMenuButton(
+                    context,
+                    title: 'Belajar\nHuruf',
+                    icon: Icons.abc_rounded,
+                    color: Colors.orangeAccent,
+                    onPressed: () {},
+                  ),
+                  _buildMenuButton(
+                    context,
+                    title: 'Belajar\nIqra',
+                    icon: Icons.menu_book_rounded,
+                    color: Colors.lightBlueAccent,
+                    onPressed: () {},
+                  ),
+                  _buildMenuButton(
+                    context,
+                    title: 'Latihan',
+                    icon: Icons.edit_note_rounded,
+                    color: Colors.lightGreenAccent.shade700,
+                    onPressed: () {},
+                  ),
+                  _buildMenuButton(
+                    context,
+                    title: 'Tentang',
+                    icon: Icons.info_outline_rounded,
+                    color: Colors.pinkAccent.shade100,
+                    onPressed: () {},
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
-            // Tombol Belajar Iqra
-            _buildMenuButton(
-              context,
-              title: 'Belajar Iqra',
-              icon: Icons.menu_book_rounded,
-              color: Colors.lightBlueAccent,
-              onPressed: () {
-                // Placeholder
-              },
-            ),
-            const Spacer(flex: 2),
           ],
         ),
       ),
@@ -73,29 +89,36 @@ class HomeScreen extends StatelessWidget {
     required Color color,
     required VoidCallback onPressed,
   }) {
-    return SizedBox(
-      width: double.infinity,
-      height: 100,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 6,
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        onPressed: onPressed,
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40),
-            const SizedBox(width: 15),
+            Icon(
+              icon,
+              size: 50,
+              color: Colors.white,
+            ),
+            const SizedBox(height: 10),
             Text(
               title,
+              textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 24,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
           ],
