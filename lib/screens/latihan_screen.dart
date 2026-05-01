@@ -28,48 +28,31 @@ class _LatihanScreenState extends State<LatihanScreen> {
   ];
 
   int _currentIndex = 0;
+  bool _hasAnswered = false;
+  bool _isCorrect = false;
 
   void _checkAnswer(String selectedAnswer) {
+    if (_hasAnswered && _isCorrect) return; // Jika sudah benar, jangan ubah jawaban
+
     String correctAnswer = _quizData[_currentIndex]['answer'];
     
-    if (selectedAnswer == correctAnswer) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Hebat! Jawabanmu Benar 🎉', style: TextStyle(fontSize: 18)),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 1),
-        ),
-      );
-      
-      // Pindah ke soal berikutnya setelah delay singkat
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) {
-          setState(() {
-            if (_currentIndex < _quizData.length - 1) {
-              _currentIndex++;
-            } else {
-              // Jika soal habis, kembali ke awal
-              _currentIndex = 0;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Latihan Selesai! Mengulang dari awal.', style: TextStyle(fontSize: 18)),
-                  backgroundColor: Colors.blueAccent,
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            }
-          });
-        }
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ups, Coba Lagi! 🤔', style: TextStyle(fontSize: 18)),
-          backgroundColor: Colors.redAccent,
-          duration: Duration(seconds: 1),
-        ),
-      );
-    }
+    setState(() {
+      _hasAnswered = true;
+      _isCorrect = (selectedAnswer == correctAnswer);
+    });
+  }
+
+  void _nextQuestion() {
+    setState(() {
+      _hasAnswered = false;
+      _isCorrect = false;
+      if (_currentIndex < _quizData.length - 1) {
+        _currentIndex++;
+      } else {
+        // Jika soal habis, kembali ke awal
+        _currentIndex = 0;
+      }
+    });
   }
 
   @override
@@ -102,11 +85,11 @@ class _LatihanScreenState extends State<LatihanScreen> {
                   color: Color(0xFF388E3C), // Hijau gelap
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
               
               // Kartu Soal Huruf Hijaiyah
               Container(
-                height: 200,
+                height: 180,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
@@ -123,25 +106,25 @@ class _LatihanScreenState extends State<LatihanScreen> {
                 child: Text(
                   currentQuestion['question'],
                   style: const TextStyle(
-                    fontSize: 120,
+                    fontSize: 100,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF2E7D32), // Hijau teks hijaiyah
                   ),
                 ),
               ),
               
-              const SizedBox(height: 50),
+              const SizedBox(height: 30),
               
               // Tombol-tombol Pilihan Jawaban
               ...(currentQuestion['options'] as List<String>).map((option) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
+                  padding: const EdgeInsets.only(bottom: 12.0),
                   child: ElevatedButton(
                     onPressed: () => _checkAnswer(option),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4FC3F7), // Biru cerah, disukai anak-anak
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -158,6 +141,40 @@ class _LatihanScreenState extends State<LatihanScreen> {
                   ),
                 );
               }),
+
+              // Pesan Benar/Salah dan Tombol Soal Berikutnya
+              if (_hasAnswered) ...[
+                const SizedBox(height: 10),
+                Text(
+                  _isCorrect ? 'Benar! 🎉' : 'Coba lagi 🤔',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: _isCorrect ? Colors.green.shade700 : Colors.red.shade600,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _nextQuestion,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFB74D), // Oranye cerah
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 5,
+                  ),
+                  child: const Text(
+                    'Soal Berikutnya',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
