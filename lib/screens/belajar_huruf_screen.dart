@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'detail_huruf_screen.dart';
 
 class HijaiyahLetter {
   final String char;
@@ -58,53 +59,69 @@ class BelajarHurufScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // 3 kolom
+            crossAxisCount: 3,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 0.85, // Kotak agak tinggi
+            childAspectRatio: 0.85,
           ),
           itemCount: letters.length,
           itemBuilder: (context, index) {
             final letter = letters[index];
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
+            return Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailHurufScreen(
+                        char: letter.char,
+                        name: letter.name,
+                        color: letter.color,
+                      ),
+                    ),
+                  );
+                },
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: letter.color.withOpacity(0.2),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: letter.color.withOpacity(0.2),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                    border: Border.all(
+                      color: letter.color.withOpacity(0.5),
+                      width: 2,
+                    ),
                   ),
-                ],
-                border: Border.all(
-                  color: letter.color.withOpacity(0.5),
-                  width: 2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        letter.char,
+                        style: TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: letter.color,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        letter.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Huruf Arab
-                  Text(
-                    letter.char,
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: letter.color,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  // Nama Huruf
-                  Text(
-                    letter.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ],
               ),
             );
           },
