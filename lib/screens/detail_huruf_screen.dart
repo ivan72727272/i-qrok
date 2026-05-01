@@ -20,6 +20,7 @@ class DetailHurufScreen extends StatelessWidget {
         title: Text('Detail Huruf $name'),
         backgroundColor: color,
         foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: Center(
         child: Column(
@@ -27,7 +28,9 @@ class DetailHurufScreen extends StatelessWidget {
           children: [
             // Kontainer Huruf Besar
             Container(
-              padding: const EdgeInsets.all(40),
+              width: 250,
+              height: 250,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
@@ -53,17 +56,46 @@ class DetailHurufScreen extends StatelessWidget {
             Text(
               name,
               style: TextStyle(
-                fontSize: 48,
+                fontSize: 56,
                 fontWeight: FontWeight.bold,
-                color: color.withOpacity(0.8),
+                color: color.withOpacity(0.9),
               ),
             ),
-            const SizedBox(height: 10),
-            const Text(
-              'Pelajari cara membacanya!',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.black54,
+            const SizedBox(height: 40),
+            // Tombol Putar Suara (Placeholder)
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: color,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 5,
+              ),
+              onPressed: () {
+                // Audio belum aktif
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Fitur suara akan segera hadir!')),
+                );
+              },
+              icon: const Icon(Icons.volume_up_rounded, size: 30),
+              label: const Text(
+                'Putar Suara',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Tombol Kembali
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Kembali',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey.shade700,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
