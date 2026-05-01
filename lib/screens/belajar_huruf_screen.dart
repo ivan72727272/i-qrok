@@ -106,7 +106,7 @@ class BelajarHurufScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Hero(
-                        tag: 'letter-${letter.name}',
+                        tag: 'letter-${letter.char}',
                         child: Text(
                           letter.char,
                           style: TextStyle(

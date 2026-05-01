@@ -99,7 +99,7 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
               const Spacer(),
               // Kontainer Huruf Besar dengan Hero Animation
               Hero(
-                tag: 'letter-${widget.name}',
+                tag: 'letter-${widget.char}',
                 child: Container(
                   width: 280,
                   height: 280,
