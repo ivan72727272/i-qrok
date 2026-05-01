@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class LatihanScreen extends StatefulWidget {
   const LatihanScreen({super.key});
@@ -7,7 +8,7 @@ class LatihanScreen extends StatefulWidget {
   State<LatihanScreen> createState() => _LatihanScreenState();
 }
 
-class _LatihanScreenState extends State<LatihanScreen> {
+class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProviderStateMixin {
   // Data statis utama untuk soal
   final List<Map<String, dynamic>> _masterQuizData = [
     {
@@ -38,6 +39,7 @@ class _LatihanScreenState extends State<LatihanScreen> {
   ];
 
   late List<Map<String, dynamic>> _activeQuizData;
+  late AudioPlayer _audioPlayer;
 
   int _currentIndex = 0;
   int _score = 0;
@@ -46,17 +48,26 @@ class _LatihanScreenState extends State<LatihanScreen> {
   bool _isFirstAttempt = true;
   bool _isFinished = false;
 
+  // Track button colors for animation
+  Map<String, Color> _buttonColors = {};
+
   @override
   void initState() {
     super.initState();
+    _audioPlayer = AudioPlayer();
     _startNewQuiz();
   }
 
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
   void _startNewQuiz() {
-    // Menyalin data master agar bisa diacak tanpa mengubah aslinya
     _activeQuizData = _masterQuizData.map((item) {
       List<String> options = List<String>.from(item['options']);
-      options.shuffle(); // Acak posisi jawaban
+      options.shuffle(); 
       return {
         'question': item['question'],
         'options': options,
@@ -64,49 +75,67 @@ class _LatihanScreenState extends State<LatihanScreen> {
       };
     }).toList();
 
-    _activeQuizData.shuffle(); // Acak urutan soal
+    _activeQuizData.shuffle(); 
 
     setState(() {
       _currentIndex = 0;
       _score = 0;
-      _hasAnswered = false;
-      _isCorrect = false;
-      _isFirstAttempt = true;
+      _resetQuestionState();
       _isFinished = false;
     });
   }
 
+  void _resetQuestionState() {
+    _hasAnswered = false;
+    _isCorrect = false;
+    _isFirstAttempt = true;
+    _buttonColors.clear();
+  }
+
+  Future<void> _playSound(bool isCorrect) async {
+    try {
+      // Akan mencoba memutar suara dari folder assets/audio/
+      // Pastikan ada file correct.mp3 dan wrong.mp3 di folder tersebut
+      String fileName = isCorrect ? 'correct.mp3' : 'wrong.mp3';
+      await _audioPlayer.play(AssetSource('audio/$fileName'));
+    } catch (e) {
+      // Abaikan jika file audio tidak ditemukan agar aplikasi tidak crash
+      debugPrint("Audio file not found: $e");
+    }
+  }
+
   void _checkAnswer(String selectedAnswer) {
-    if (_hasAnswered && _isCorrect) return; // Jika sudah benar, jangan ubah jawaban
+    if (_hasAnswered && _isCorrect) return; // Jika sudah benar, jangan ubah jawaban lagi
 
     String correctAnswer = _activeQuizData[_currentIndex]['answer'];
     bool isAnswerCorrect = selectedAnswer == correctAnswer;
     
+    _playSound(isAnswerCorrect);
+
     setState(() {
       _hasAnswered = true;
       _isCorrect = isAnswerCorrect;
       
-      // Tambah skor hanya jika benar pada percobaan pertama
-      if (isAnswerCorrect && _isFirstAttempt) {
-        _score += 20; // 5 soal x 20 = 100
-      }
-      
-      if (!isAnswerCorrect) {
-        _isFirstAttempt = false; // Percobaan pertama gagal
+      // Animasi warna tombol
+      if (isAnswerCorrect) {
+        _buttonColors[selectedAnswer] = Colors.greenAccent.shade700;
+        if (_isFirstAttempt) {
+          _score += 20; // Tambah skor hanya pada percobaan pertama
+        }
+      } else {
+        _buttonColors[selectedAnswer] = Colors.redAccent.shade700;
+        _isFirstAttempt = false; 
       }
     });
   }
 
   void _nextQuestion() {
     setState(() {
-      _hasAnswered = false;
-      _isCorrect = false;
-      _isFirstAttempt = true;
+      _resetQuestionState();
       
       if (_currentIndex < _activeQuizData.length - 1) {
         _currentIndex++;
       } else {
-        // Latihan selesai
         _isFinished = true;
       }
     });
@@ -207,15 +236,14 @@ class _LatihanScreenState extends State<LatihanScreen> {
     final currentQuestion = _activeQuizData[_currentIndex];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F8E9), // Warna hijau pastel terang yang lembut
+      backgroundColor: const Color(0xFFF1F8E9), 
       appBar: AppBar(
         title: const Text('Latihan', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF81C784), // Hijau E-Cro
+        backgroundColor: const Color(0xFF81C784),
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
         actions: [
-          // Tampilan Skor di Pojok Kanan Atas
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
@@ -245,7 +273,6 @@ class _LatihanScreenState extends State<LatihanScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Indikator Soal
               Text(
                 'Soal ${_currentIndex + 1} / ${_activeQuizData.length}',
                 textAlign: TextAlign.center,
@@ -257,105 +284,128 @@ class _LatihanScreenState extends State<LatihanScreen> {
               ),
               const SizedBox(height: 10),
 
-              // Judul Soal
               const Text(
                 'Tebak Huruf Berikut',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF388E3C), // Hijau gelap
+                  color: Color(0xFF388E3C), 
                 ),
               ),
               const SizedBox(height: 30),
               
-              // Kartu Soal Huruf Hijaiyah
-              Container(
+              // Kartu Huruf Hijaiyah dengan efek pantulan ketika benar/salah
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
                 height: 180,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: _hasAnswered ? (_isCorrect ? Colors.green.shade50 : Colors.red.shade50) : Colors.white,
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.green.withOpacity(0.2),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
+                      color: _hasAnswered 
+                        ? (_isCorrect ? Colors.green.withOpacity(0.4) : Colors.red.withOpacity(0.4))
+                        : Colors.green.withOpacity(0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
                     ),
                   ],
-                  border: Border.all(color: const Color(0xFFAED581), width: 4),
+                  border: Border.all(
+                    color: _hasAnswered 
+                      ? (_isCorrect ? Colors.green : Colors.redAccent) 
+                      : const Color(0xFFAED581), 
+                    width: 4
+                  ),
                 ),
                 alignment: Alignment.center,
-                child: Text(
-                  currentQuestion['question'],
-                  style: const TextStyle(
-                    fontSize: 100,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E7D32), // Hijau teks hijaiyah
+                child: AnimatedScale(
+                  scale: _hasAnswered && _isCorrect ? 1.1 : 1.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Text(
+                    currentQuestion['question'],
+                    style: TextStyle(
+                      fontSize: 100,
+                      fontWeight: FontWeight.bold,
+                      color: _hasAnswered 
+                        ? (_isCorrect ? Colors.green.shade700 : Colors.red.shade700) 
+                        : const Color(0xFF2E7D32),
+                    ),
                   ),
                 ),
               ),
               
               const SizedBox(height: 30),
               
-              // Tombol-tombol Pilihan Jawaban
+              // Tombol Pilihan Jawaban
               ...(currentQuestion['options'] as List<String>).map((option) {
+                Color buttonColor = _buttonColors[option] ?? const Color(0xFF4FC3F7);
+                
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  child: ElevatedButton(
-                    onPressed: () => _checkAnswer(option),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4FC3F7), // Biru cerah, disukai anak-anak
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    child: ElevatedButton(
+                      onPressed: () => _checkAnswer(option),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: buttonColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 22), // Lebih tebal
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25), // Lebih bulat
+                        ),
+                        elevation: _buttonColors.containsKey(option) ? 2 : 8, // Efek tertekan
                       ),
-                      elevation: 5,
-                    ),
-                    child: Text(
-                      option,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
+                      child: Text(
+                        option,
+                        style: const TextStyle(
+                          fontSize: 26, // Font lebih besar
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2.0,
+                        ),
                       ),
                     ),
                   ),
                 );
               }),
 
-              // Pesan Benar/Salah dan Tombol Soal Berikutnya
+              // Pesan & Tombol Soal Berikutnya
               if (_hasAnswered) ...[
                 const SizedBox(height: 10),
-                Text(
-                  _isCorrect ? 'Benar! 🎉' : 'Coba lagi 🤔',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: _isCorrect ? Colors.green.shade700 : Colors.red.shade600,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _nextQuestion,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFB74D), // Oranye cerah
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    elevation: 5,
-                  ),
-                  child: const Text(
-                    'Soal Berikutnya',
+                AnimatedOpacity(
+                  opacity: 1.0,
+                  duration: const Duration(milliseconds: 400),
+                  child: Text(
+                    _isCorrect ? 'Hebat! Benar! 🎉' : 'Ups, Coba Lagi! 🤔',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
+                      color: _isCorrect ? Colors.green.shade700 : Colors.red.shade600,
                     ),
                   ),
                 ),
+                if (_isCorrect) ...[
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: _nextQuestion,
+                    icon: const Icon(Icons.arrow_forward_rounded, size: 28),
+                    label: const Text(
+                      'Lanjut',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFFB74D), 
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      elevation: 8,
+                    ),
+                  ),
+                ]
               ],
             ],
           ),
