@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'belajar_huruf_screen.dart';
+import 'belajar_iqra_screen.dart';
+import 'latihan_screen.dart';
+import 'tentang_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -50,28 +54,48 @@ class HomeScreen extends StatelessWidget {
                     title: 'Belajar\nHuruf',
                     icon: Icons.abc_rounded,
                     color: Colors.orangeAccent,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const BelajarHurufScreen()),
+                      );
+                    },
                   ),
                   _buildMenuButton(
                     context,
                     title: 'Belajar\nIqra',
                     icon: Icons.menu_book_rounded,
                     color: Colors.lightBlueAccent,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const BelajarIqraScreen()),
+                      );
+                    },
                   ),
                   _buildMenuButton(
                     context,
                     title: 'Latihan',
                     icon: Icons.edit_note_rounded,
                     color: Colors.lightGreenAccent.shade700,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LatihanScreen()),
+                      );
+                    },
                   ),
                   _buildMenuButton(
                     context,
                     title: 'Tentang',
                     icon: Icons.info_outline_rounded,
                     color: Colors.pinkAccent.shade100,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const TentangScreen()),
+                      );
+                    },
                   ),
                 ],
               ),
