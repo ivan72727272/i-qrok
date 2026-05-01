@@ -14,7 +14,6 @@ class BelajarHurufScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Data statis huruf hijaiyah
     final List<HijaiyahLetter> letters = [
       HijaiyahLetter(char: 'أ', name: 'Alif', color: Colors.redAccent),
       HijaiyahLetter(char: 'ب', name: 'Ba', color: Colors.blueAccent),
@@ -56,12 +55,12 @@ class BelajarHurufScreen extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
             childAspectRatio: 0.85,
           ),
           itemCount: letters.length,
@@ -73,50 +72,58 @@ class BelajarHurufScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => DetailHurufScreen(
+                    PageRouteBuilder(
+                      transitionDuration: const Duration(milliseconds: 500),
+                      pageBuilder: (context, animation, secondaryAnimation) => DetailHurufScreen(
                         char: letter.char,
                         name: letter.name,
                         color: letter.color,
                       ),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
                     ),
                   );
                 },
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(24),
                 child: Ink(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: letter.color.withOpacity(0.2),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
+                        color: letter.color.withOpacity(0.15),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                     border: Border.all(
-                      color: letter.color.withOpacity(0.5),
-                      width: 2,
+                      color: letter.color.withOpacity(0.4),
+                      width: 2.5,
                     ),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        letter.char,
-                        style: TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: letter.color,
+                      Hero(
+                        tag: 'letter-${letter.name}',
+                        child: Text(
+                          letter.char,
+                          style: TextStyle(
+                            fontSize: 52,
+                            fontWeight: FontWeight.bold,
+                            color: letter.color,
+                            decoration: TextDecoration.none,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
                       Text(
                         letter.name,
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black54,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black45,
                         ),
                       ),
                     ],
