@@ -11,20 +11,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:i_qrok/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('App launch smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const ECroApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Advance time by 4 seconds to allow the splash screen timer to finish
+    await tester.pumpAndSettle(const Duration(seconds: 4));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that we reached the HomeScreen
+    expect(find.text('Belajar Iqra'), findsWidgets);
   });
 }

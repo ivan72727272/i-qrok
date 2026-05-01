@@ -49,7 +49,7 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
   bool _isFinished = false;
 
   // Track button colors for animation
-  Map<String, Color> _buttonColors = {};
+  final Map<String, Color> _buttonColors = {};
 
   @override
   void initState() {
