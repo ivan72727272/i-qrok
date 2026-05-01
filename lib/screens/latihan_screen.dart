@@ -270,13 +270,14 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 600),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
                     'Soal ${_currentIndex + 1} / ${_activeQuizData.length}',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
@@ -414,6 +415,7 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
               ),
             ),
           ),
+        ),
         ),
       ),
     );
