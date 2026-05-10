@@ -123,16 +123,27 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
 
     try {
       final fileName = _getAudioPath();
-      await _audioPlayer.stop();
-      await _audioPlayer.play(AssetSource('audio/iqra/$fileName'));
-    } catch (e) {
-      debugPrint('❌ Error Playing Audio: $e');
+      final fullPath = 'assets/audio/iqra/$fileName';
+      
+      // Double check file existence
+      await rootBundle.load(fullPath);
 
+      await _audioPlayer.stop();
+      // Set timeout for playback start
+      await _audioPlayer.play(AssetSource('audio/iqra/$fileName')).timeout(
+        const Duration(seconds: 3),
+        onTimeout: () {
+          throw Exception('Playback Timeout');
+        },
+      );
+    } catch (e) {
+      debugPrint('❌ Audio playback failed: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Upss suara belum tersedia 😊'),
+            content: const Text('Audio belum tersedia 😊'),
             backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -142,6 +153,7 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

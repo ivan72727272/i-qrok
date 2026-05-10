@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../constants/app_constants.dart';
 import '../widgets/animated_button.dart';
@@ -84,18 +85,36 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
 
   Future<void> _playSound(bool isCorrect) async {
     try {
-      if (isCorrect) {
-        await _audioPlayer.stop();
-        await _audioPlayer.play(AssetSource('audio/sapaan/masyaallah.mp3'));
+      final String path = isCorrect ? 'audio/sapaan/masyaallah.mp3' : 'audio/wrong.mp3';
+      
+      // Check file existence
+      await rootBundle.load('assets/$path');
+
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource(path)).timeout(
+        const Duration(seconds: 3),
+        onTimeout: () {
+          throw Exception('Playback Timeout');
+        },
+      );
+      
+      if (isCorrect && mounted) {
         setState(() => _showReward = true);
-      } else {
-        await _audioPlayer.stop();
-        await _audioPlayer.play(AssetSource('audio/wrong.mp3'));
       }
     } catch (e) {
-      debugPrint("Audio file not found: $e");
+      debugPrint("Audio playback failed: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Audio belum tersedia 😊'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
+
 
   void _checkAnswer(String selectedAnswer) {
     if (_hasAnswered && _isCorrect) return;

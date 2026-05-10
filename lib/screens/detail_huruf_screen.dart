@@ -73,8 +73,18 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
     try {
       String? fileName = _audioMapping[widget.char];
       if (fileName != null) {
+        final fullPath = 'assets/audio/huruf/$fileName';
+        
+        // Check file existence
+        await rootBundle.load(fullPath);
+
         await _audioPlayer.stop();
-        await _audioPlayer.play(AssetSource('audio/huruf/$fileName'));
+        await _audioPlayer.play(AssetSource('audio/huruf/$fileName')).timeout(
+          const Duration(seconds: 3),
+          onTimeout: () {
+            throw Exception('Playback Timeout');
+          },
+        );
       } else {
         throw Exception('Audio not mapped');
       }
@@ -83,13 +93,7 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.sentiment_dissatisfied_rounded, color: Colors.white),
-                SizedBox(width: 12),
-                Text('Audio tidak ditemukan 😊'),
-              ],
-            ),
+            content: const Text('Audio belum tersedia 😊'),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
@@ -101,6 +105,7 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
       if (mounted) setState(() => _isLoading = false);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
