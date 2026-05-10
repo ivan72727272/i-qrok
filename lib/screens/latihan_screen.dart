@@ -10,7 +10,6 @@ class LatihanScreen extends StatefulWidget {
 }
 
 class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProviderStateMixin {
-  // Data statis utama untuk soal
   final List<Map<String, dynamic>> _masterQuizData = [
     {'question': 'ب', 'options': ['Ta', 'Ba', 'Jim'], 'answer': 'Ba'},
     {'question': 'ت', 'options': ['Ta', 'Sa', 'Alif'], 'answer': 'Ta'},
@@ -34,7 +33,6 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
   bool _isFirstAttempt = true;
   bool _isFinished = false;
 
-  // Track button colors for animation
   final Map<String, Color> _buttonColors = {};
 
   @override
@@ -51,7 +49,6 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
   }
 
   void _startNewQuiz() {
-    // Ambil 5 soal acak dari master data untuk setiap sesi
     final List<Map<String, dynamic>> tempMaster = List.from(_masterQuizData);
     tempMaster.shuffle();
     
@@ -82,18 +79,16 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
 
   Future<void> _playSound(bool isCorrect) async {
     try {
-      // Akan mencoba memutar suara dari folder assets/audio/
-      // Pastikan ada file correct.mp3 dan wrong.mp3 di folder tersebut
       String fileName = isCorrect ? 'correct.mp3' : 'wrong.mp3';
+      await _audioPlayer.stop();
       await _audioPlayer.play(AssetSource('audio/$fileName'));
     } catch (e) {
-      // Abaikan jika file audio tidak ditemukan agar aplikasi tidak crash
       debugPrint("Audio file not found: $e");
     }
   }
 
   void _checkAnswer(String selectedAnswer) {
-    if (_hasAnswered && _isCorrect) return; // Jika sudah benar, jangan ubah jawaban lagi
+    if (_hasAnswered && _isCorrect) return;
 
     String correctAnswer = _activeQuizData[_currentIndex]['answer'];
     bool isAnswerCorrect = selectedAnswer == correctAnswer;
@@ -104,14 +99,13 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
       _hasAnswered = true;
       _isCorrect = isAnswerCorrect;
       
-      // Animasi warna tombol
       if (isAnswerCorrect) {
-        _buttonColors[selectedAnswer] = Colors.greenAccent.shade700;
+        _buttonColors[selectedAnswer] = const Color(0xFFA5D6A7); // Pastel Green
         if (_isFirstAttempt) {
-          _score += 20; // Tambah skor hanya pada percobaan pertama
+          _score += 20;
         }
       } else {
-        _buttonColors[selectedAnswer] = Colors.redAccent.shade700;
+        _buttonColors[selectedAnswer] = const Color(0xFFEF9A9A); // Pastel Red
         _isFirstAttempt = false; 
       }
     });
@@ -120,7 +114,6 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
   void _nextQuestion() {
     setState(() {
       _resetQuestionState();
-      
       if (_currentIndex < _activeQuizData.length - 1) {
         _currentIndex++;
       } else {
@@ -131,12 +124,11 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
 
   Widget _buildResultScreen() {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F8E9),
+      backgroundColor: const Color(0xFFF6F8F2),
       appBar: AppBar(
-        title: const Text('Hasil Latihan', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF81C784),
-        foregroundColor: Colors.white,
-        centerTitle: true,
+        title: const Text('Latihan Selesai', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFFF6F8F2),
+        foregroundColor: const Color(0xFF2E7D32),
         elevation: 0,
       ),
       body: TweenAnimationBuilder<double>(
@@ -159,12 +151,13 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Latihan Selesai! 🎉',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF388E3C),
-                  ),
+                  'Hebat! 🎉',
+                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Kamu sudah menyelesaikan latihan.',
+                  style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
                 const SizedBox(height: 40),
                 Container(
@@ -174,31 +167,22 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.green.withOpacity(0.2),
+                        color: Colors.black.withOpacity(0.05),
                         blurRadius: 30,
                         offset: const Offset(0, 15),
                       ),
                     ],
-                    border: Border.all(color: const Color(0xFFFFB74D), width: 6),
+                    border: Border.all(color: const Color(0xFFFFCC80), width: 8),
                   ),
                   child: Column(
                     children: [
                       const Text(
-                        'Skor Kamu',
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        'SKOR',
+                        style: TextStyle(fontSize: 20, color: Colors.grey, fontWeight: FontWeight.w900, letterSpacing: 2),
                       ),
-                      const SizedBox(height: 10),
                       Text(
                         '$_score',
-                        style: const TextStyle(
-                          fontSize: 100,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFFF9800),
-                        ),
+                        style: const TextStyle(fontSize: 100, fontWeight: FontWeight.w900, color: Color(0xFFFFB74D)),
                       ),
                     ],
                   ),
@@ -207,13 +191,13 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                 AnimatedButton(
                   onTap: _startNewQuiz,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4FC3F7),
-                      borderRadius: BorderRadius.circular(40),
+                      color: const Color(0xFF81D4FA),
+                      borderRadius: BorderRadius.circular(100),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.blue.withOpacity(0.3),
+                          color: const Color(0xFF81D4FA).withOpacity(0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 5),
                         ),
@@ -222,11 +206,11 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.refresh_rounded, color: Colors.white, size: 30),
+                        Icon(Icons.refresh_rounded, color: Colors.white, size: 28),
                         SizedBox(width: 12),
                         Text(
-                          'Ulangi Latihan',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                          'Coba Lagi',
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                       ],
                     ),
@@ -250,223 +234,201 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    if (_isFinished) {
-      return _buildResultScreen();
-    }
+    if (_isFinished) return _buildResultScreen();
 
     final currentQuestion = _activeQuizData[_currentIndex];
+    double progress = (_currentIndex + 1) / _activeQuizData.length;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F8E9), 
+      backgroundColor: const Color(0xFFF6F8F2),
       appBar: AppBar(
         title: const Text('Latihan', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF81C784),
-        foregroundColor: Colors.white,
-        centerTitle: true,
+        backgroundColor: const Color(0xFFF6F8F2),
+        foregroundColor: const Color(0xFF2E7D32),
         elevation: 0,
+        centerTitle: true,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)],
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.stars_rounded, color: Color(0xFFFFB74D), size: 24),
+                const SizedBox(width: 4),
+                Text(
+                  '$_score',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFFFB74D)),
                 ),
-                child: Text(
-                  '⭐ $_score',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFFFB74D),
+              ],
+            ),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Progress Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.black.withOpacity(0.05),
+                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF81C784)),
+                minHeight: 10,
+              ),
+            ),
+          ),
+          Expanded(
+            child: TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 800),
+              tween: Tween(begin: 0.0, end: 1.0),
+              curve: Curves.easeOutQuart,
+              builder: (context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: Transform.translate(
+                    offset: Offset(0, 30 * (1 - value)),
+                    child: child,
                   ),
+                );
+              },
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Huruf apakah ini?',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: Colors.black54),
+                    ),
+                    const SizedBox(height: 30),
+                    // Question Card
+                    Container(
+                      width: double.infinity,
+                      height: 220,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(32),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                        border: Border.all(
+                          color: _hasAnswered
+                              ? (_isCorrect ? const Color(0xFF81C784) : const Color(0xFFEF9A9A))
+                              : Colors.white,
+                          width: 3,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        currentQuestion['question'],
+                        style: TextStyle(
+                          fontSize: 120,
+                          fontWeight: FontWeight.bold,
+                          color: _hasAnswered
+                              ? (_isCorrect ? const Color(0xFF2E7D32) : const Color(0xFFC62828))
+                              : const Color(0xFF2E7D32),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    // Options
+                    ...(currentQuestion['options'] as List<String>).map((option) {
+                      Color bgColor = _buttonColors[option] ?? Colors.white;
+                      Color textColor = _buttonColors.containsKey(option) ? Colors.white : Colors.black87;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: AnimatedButton(
+                          onTap: () => _checkAnswer(option),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            decoration: BoxDecoration(
+                              color: bgColor,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: _buttonColors.containsKey(option) ? bgColor : Colors.black.withOpacity(0.05),
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                if (!_buttonColors.containsKey(option))
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.03),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                              ],
+                            ),
+                            child: Text(
+                              option,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 20),
+                    // Feedback & Next Button
+                    if (_hasAnswered)
+                      Column(
+                        children: [
+                          Text(
+                            _isCorrect ? 'Hebat! Kamu Benar 🎉' : 'Ups, coba lagi ya! 😊',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: _isCorrect ? const Color(0xFF2E7D32) : const Color(0xFFC62828),
+                            ),
+                          ),
+                          if (_isCorrect) ...[
+                            const SizedBox(height: 20),
+                            AnimatedButton(
+                              onTap: _nextQuestion,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF81C784),
+                                  borderRadius: BorderRadius.circular(100),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF81C784).withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Lanjut',
+                                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                  ],
                 ),
               ),
             ),
           ),
         ],
-      ),
-      body: TweenAnimationBuilder<double>(
-        duration: const Duration(milliseconds: 600),
-        tween: Tween(begin: 0.0, end: 1.0),
-        curve: Curves.easeOutCubic,
-        builder: (context, value, child) {
-          return Opacity(
-            opacity: value,
-            child: Transform.translate(
-              offset: Offset(0, 30 * (1 - value)),
-              child: child,
-            ),
-          );
-        },
-        child: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Soal ${_currentIndex + 1} / ${_activeQuizData.length}',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'Tebak Huruf Berikut',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF388E3C),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      // Kartu Huruf Hijaiyah dengan efek pantulan ketika benar/salah
-                      RepaintBoundary(
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          height: 180,
-                          decoration: BoxDecoration(
-                            color: _hasAnswered ? (_isCorrect ? Colors.green.shade50 : Colors.red.shade50) : Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: _hasAnswered 
-                                  ? (_isCorrect ? Colors.green.withOpacity(0.4) : Colors.red.withOpacity(0.4))
-                                  : Colors.green.withOpacity(0.2),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
-                            border: Border.all(
-                              color: _hasAnswered 
-                                ? (_isCorrect ? Colors.green : Colors.redAccent) 
-                                : const Color(0xFFAED581), 
-                              width: 4
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: AnimatedScale(
-                            scale: _hasAnswered && _isCorrect ? 1.1 : 1.0,
-                            duration: const Duration(milliseconds: 300),
-                            child: Text(
-                              currentQuestion['question'],
-                              style: TextStyle(
-                                fontSize: 100,
-                                fontWeight: FontWeight.bold,
-                                color: _hasAnswered 
-                                  ? (_isCorrect ? Colors.green.shade700 : Colors.red.shade700) 
-                                  : const Color(0xFF2E7D32),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      // Tombol Pilihan Jawaban
-                      ...(currentQuestion['options'] as List<String>).map((option) {
-                        Color buttonColor = _buttonColors[option] ?? const Color(0xFF4FC3F7);
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
-                          child: AnimatedButton(
-                            onTap: () => _checkAnswer(option),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 250),
-                              curve: Curves.easeInOut,
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 22),
-                              decoration: BoxDecoration(
-                                color: buttonColor,
-                                borderRadius: BorderRadius.circular(25),
-                                boxShadow: [
-                                  if (!_buttonColors.containsKey(option))
-                                    const BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 8,
-                                      offset: Offset(0, 4),
-                                    ),
-                                ],
-                              ),
-                              child: Text(
-                                option,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 2.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                      // Pesan & Tombol Soal Berikutnya
-                      if (_hasAnswered) ...[
-                        const SizedBox(height: 10),
-                        AnimatedOpacity(
-                          opacity: 1.0,
-                          duration: const Duration(milliseconds: 400),
-                          child: Text(
-                            _isCorrect ? 'Hebat! Benar! 🎉' : 'Ups, Coba Lagi! 🤔',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: _isCorrect ? Colors.green.shade700 : Colors.red.shade600,
-                            ),
-                          ),
-                        ),
-                        if (_isCorrect) ...[
-                          const SizedBox(height: 16),
-                          AnimatedButton(
-                            onTap: _nextQuestion,
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFB74D),
-                                borderRadius: BorderRadius.circular(25),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 8,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.arrow_forward_rounded, size: 28, color: Colors.white),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Lanjut',
-                                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ]
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
