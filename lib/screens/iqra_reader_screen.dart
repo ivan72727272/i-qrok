@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/iqra_model.dart';
+import '../data/iqra_data.dart';
 import '../constants/app_constants.dart';
 import '../widgets/animated_button.dart';
 import '../widgets/custom_app_bar.dart';
@@ -20,12 +23,16 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
   int _currentPage = 0;
   bool _isPlaying = false;
   bool _isLoading = false;
+  bool _isDataLoading = true;
+  bool _isAudioAvailable = false;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
     _audioPlayer = AudioPlayer();
+
+    _loadData();
 
     _audioPlayer.onPlayerStateChanged.listen((state) {
       if (mounted) {
@@ -45,6 +52,51 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
     });
   }
 
+  Future<void> _loadData() async {
+    await IqraData.loadLevelPages(widget.level);
+    
+    // Load bookmark
+    final prefs = await SharedPreferences.getInstance();
+    final bookmarkKey = 'iqra_bookmark_${widget.level.level}';
+    final savedPage = prefs.getInt(bookmarkKey) ?? 0;
+
+    if (mounted) {
+      setState(() {
+        _isDataLoading = false;
+        _currentPage = (savedPage < widget.level.pages.length) ? savedPage : 0;
+        _pageController = PageController(initialPage: _currentPage);
+      });
+      _checkAudioAvailability();
+    }
+  }
+
+  Future<void> _saveBookmark(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    final bookmarkKey = 'iqra_bookmark_${widget.level.level}';
+    await prefs.setInt(bookmarkKey, index);
+  }
+
+  Future<void> _checkAudioAvailability() async {
+    if (widget.level.pages.isEmpty) return;
+    
+    final page = widget.level.pages[_currentPage];
+    final path = 'assets/audio/iqra/${page.audioPath}';
+    
+    bool available = false;
+    try {
+      await rootBundle.load(path);
+      available = true;
+    } catch (e) {
+      available = false;
+    }
+    
+    if (mounted) {
+      setState(() {
+        _isAudioAvailable = available;
+      });
+    }
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -53,7 +105,7 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
   }
 
   Future<void> _playAudio() async {
-    if (_isLoading || _isPlaying) return;
+    if (!_isAudioAvailable || _isLoading || _isPlaying) return;
 
     setState(() => _isLoading = true);
 
@@ -66,17 +118,8 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.sentiment_dissatisfied_rounded, color: Colors.white),
-                SizedBox(width: 12),
-                Text('Upss suara belum tersedia 😊'),
-              ],
-            ),
+            content: const Text('Upss suara belum tersedia 😊'),
             backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
-            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -89,212 +132,259 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isDataLoading) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (widget.level.pages.isEmpty) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: CustomAppBar(title: widget.level.title, subtitle: 'Kosong'),
+        body: const Center(child: Text('Data belum tersedia')),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: CustomAppBar(
         title: widget.level.title,
         subtitle: 'Belajar Membaca',
         backgroundColor: widget.level.color,
         foregroundColor: Colors.white,
       ),
-      body: TweenAnimationBuilder<double>(
-        duration: const Duration(milliseconds: 600),
-        tween: Tween(begin: 0.0, end: 1.0),
-        curve: Curves.easeOutCubic,
-        builder: (context, value, child) {
-          return Opacity(
-            opacity: value,
-            child: child,
-          );
-        },
-        child: Column(
-          children: [
-            // Progress Bar
-            LinearProgressIndicator(
-              value: (widget.level.pages.isEmpty) ? 0 : (_currentPage + 1) / widget.level.pages.length,
-              backgroundColor: widget.level.color.withOpacity(0.1),
-              valueColor: AlwaysStoppedAnimation<Color>(widget.level.color),
-              minHeight: 6,
-            ),
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: widget.level.pages.length,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                    _audioPlayer.stop();
-                    _isPlaying = false;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  final page = widget.level.pages[index];
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 20),
-                        // Arabic Text Container
-                        Container(
-                          width: double.infinity,
-                          constraints: const BoxConstraints(minHeight: 250),
-                          padding: const EdgeInsets.all(30),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(color: widget.level.color.withOpacity(0.2), width: 3),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              page.arabic,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 80,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                        // Latin Transliteration
-                        Text(
-                          page.latin,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: widget.level.color,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 40),
-                        // Play Audio Button
-                        AnimatedButton(
-                          onTap: _playAudio,
-                          child: Container(
-                            width: 110,
-                            height: 110,
+      body: Column(
+        children: [
+          // Progress Bar
+          LinearProgressIndicator(
+            value: (_currentPage + 1) / widget.level.pages.length,
+            backgroundColor: widget.level.color.withOpacity(0.1),
+            valueColor: AlwaysStoppedAnimation<Color>(widget.level.color),
+            minHeight: 4,
+          ),
+          Expanded(
+            child: Stack(
+              children: [
+                // Ornaments
+                Positioned(
+                  top: 20,
+                  right: -20,
+                  child: Opacity(
+                    opacity: 0.1,
+                    child: Icon(Icons.star_rounded, size: 100, color: widget.level.color),
+                  ),
+                ),
+                Positioned(
+                  bottom: 100,
+                  left: -30,
+                  child: Opacity(
+                    opacity: 0.05,
+                    child: Icon(Icons.nights_stay_rounded, size: 150, color: widget.level.color),
+                  ),
+                ),
+                
+                PageView.builder(
+                  controller: _pageController,
+                  itemCount: widget.level.pages.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                      _audioPlayer.stop();
+                      _isPlaying = false;
+                    });
+                    _checkAudioAvailability();
+                    _saveBookmark(index);
+                  },
+                  itemBuilder: (context, index) {
+                    final page = widget.level.pages[index];
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 20),
+                          // Book-like Container
+                          Container(
+                            width: double.infinity,
+                            constraints: const BoxConstraints(minHeight: 280),
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                             decoration: BoxDecoration(
-                              color: widget.level.color,
-                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(AppRadius.xl),
                               boxShadow: [
                                 BoxShadow(
-                                  color: widget.level.color.withOpacity(0.4),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 8),
+                                  color: Colors.black.withOpacity(0.04),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
+                              border: Border.all(color: Colors.white, width: 4),
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  page.arabic,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 64,
+                                    fontWeight: FontWeight.w900,
+                                    color: AppColors.textMain,
+                                    height: 1.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 30),
+                                Text(
+                                  page.latin,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: widget.level.color.withOpacity(0.7),
+                                    letterSpacing: 1.2,
+                                  ),
                                 ),
                               ],
                             ),
-                            child: _isLoading
-                                ? const Padding(
-                                    padding: EdgeInsets.all(30.0),
-                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 4),
-                                  )
-                                : Icon(
-                                    _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                                    size: 70,
-                                    color: Colors.white,
-                                  ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                          const SizedBox(height: 40),
+                          
+                          // Audio Button Section
+                          Column(
+                            children: [
+                              AnimatedButton(
+                                onTap: _isAudioAvailable ? _playAudio : () {},
+                                child: Opacity(
+                                  opacity: _isAudioAvailable ? 1.0 : 0.4,
+                                  child: Container(
+                                    width: 100,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      color: _isAudioAvailable ? widget.level.color : Colors.grey,
+                                      shape: BoxShape.circle,
+                                      boxShadow: _isAudioAvailable ? [
+                                        BoxShadow(
+                                          color: widget.level.color.withOpacity(0.3),
+                                          blurRadius: 15,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                      ] : [],
+                                    ),
+                                    child: _isLoading
+                                        ? const Padding(
+                                            padding: EdgeInsets.all(28.0),
+                                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 4),
+                                          )
+                                        : Icon(
+                                            !_isAudioAvailable 
+                                                ? Icons.volume_off_rounded 
+                                                : (_isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded),
+                                            size: 50,
+                                            color: Colors.white,
+                                          ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _isAudioAvailable ? 'Dengarkan' : 'Audio belum tersedia',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: _isAudioAvailable ? widget.level.color : Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-            // Navigation Buttons
-            Container(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
+          ),
+          
+          // Navigation Bar
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: SafeArea(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildNavButton(
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    label: 'Kembali',
+                    icon: Icons.chevron_left_rounded,
                     onPressed: _currentPage > 0
                         ? () => _pageController.previousPage(
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.easeOutCubic,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
                             )
                         : null,
                   ),
-                  Text(
-                    '${_currentPage + 1} / ${widget.level.pages.length}',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
+                  
+                  // Mascot & Page Indicator
+                  Row(
+                    children: [
+                      Image.asset('assets/images/mascot_muslim_boy.png', width: 40),
+                      const SizedBox(width: 12),
+                      Column(
+                        children: [
+                          Text(
+                            'Halaman',
+                            style: TextStyle(fontSize: 12, color: AppColors.textDim, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '${_currentPage + 1} / ${widget.level.pages.length}',
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.textMain),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
+
                   _buildNavButton(
-                    icon: Icons.arrow_forward_ios_rounded,
-                    label: 'Lanjut',
+                    icon: Icons.chevron_right_rounded,
                     onPressed: _currentPage < widget.level.pages.length - 1
                         ? () => _pageController.nextPage(
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.easeOutCubic,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
                             )
                         : null,
-                    isForward: true,
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildNavButton({
     required IconData icon,
-    required String label,
     VoidCallback? onPressed,
-    bool isForward = false,
   }) {
     return AnimatedButton(
       onTap: onPressed ?? () {},
       child: Opacity(
-        opacity: onPressed == null ? 0.5 : 1.0,
+        opacity: onPressed == null ? 0.3 : 1.0,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          width: 56,
+          height: 56,
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: onPressed != null ? widget.level.color : Colors.grey.shade300, width: 2),
+            color: widget.level.color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
           ),
-          child: Row(
-            children: isForward
-                ? [
-                    Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: widget.level.color)),
-                    const SizedBox(width: 8),
-                    Icon(icon, size: 20, color: widget.level.color),
-                  ]
-                : [
-                    Icon(icon, size: 20, color: widget.level.color),
-                    const SizedBox(width: 8),
-                    Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: widget.level.color)),
-                  ],
-          ),
+          child: Icon(icon, size: 32, color: widget.level.color),
         ),
       ),
     );
   }
 }
+
+

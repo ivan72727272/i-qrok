@@ -10,6 +10,14 @@ class IqraPage {
     required this.latin,
     required this.audioPath,
   });
+
+  factory IqraPage.fromJson(Map<String, dynamic> json) {
+    return IqraPage(
+      arabic: json['arabic'],
+      latin: json['latin'],
+      audioPath: json['audio'],
+    );
+  }
 }
 
 class IqraLevel {
@@ -17,13 +25,14 @@ class IqraLevel {
   final String title;
   final String description;
   final Color color;
-  final List<IqraPage> pages;
+  List<IqraPage> pages;
 
   IqraLevel({
     required this.level,
     required this.title,
     required this.description,
     required this.color,
-    required this.pages,
+    this.pages = const [],
   });
 }
+
