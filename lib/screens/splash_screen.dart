@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
 import '../widgets/islamic_decor.dart';
 import 'home_screen.dart';
+import 'onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -30,12 +32,19 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
 
     _playGreeting();
+    _checkFirstTime();
+  }
+
+  Future<void> _checkFirstTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
 
     Timer(const Duration(seconds: 4), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+            pageBuilder: (context, animation, secondaryAnimation) => 
+                hasSeenOnboarding ? const HomeScreen() : const OnboardingScreen(),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
             },
@@ -119,8 +128,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         alignment: Alignment.center,
                         children: [
                           Container(
-                            width: 220,
-                            height: 220,
+                            width: 260,
+                            height: 260,
                             decoration: BoxDecoration(
                               color: Colors.white,
                               shape: BoxShape.circle,
@@ -134,9 +143,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                               border: Border.all(color: Colors.white, width: 4),
                             ),
                           ),
-                          Image.asset(
-                            'assets/images/mascot_muslim_boy.png',
-                            width: 180,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset('assets/images/mascot_muslim_boy.png', width: 110),
+                              Image.asset('assets/images/mascot_muslim_girl.png', width: 110),
+                            ],
                           ),
                         ],
                       ),
@@ -169,14 +181,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       ],
                     ),
                     child: const Text(
-                      'Belajar Iqra Jadi Lebih Seru!',
+                      'Belajar Iqra Menjadi Lebih Mudah',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textMain,
                       ),
                     ),
                   ),
+
                 ],
               ),
             ),

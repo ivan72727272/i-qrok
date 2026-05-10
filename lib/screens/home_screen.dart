@@ -1,16 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
 import '../widgets/menu_card.dart';
 import '../widgets/islamic_decor.dart';
-import 'belajar_huruf_screen.dart';
+import '../data/iqra_data.dart';
 import 'belajar_iqra_screen.dart';
 import 'latihan_screen.dart';
 import 'tentang_screen.dart';
-import 'game_selection_screen.dart';
+import 'progress_screen.dart';
+import 'iqra_reader_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  Future<void> _startLearning(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    int highestLevel = 1;
+    
+    // Find the highest level that has been opened/bookmarked
+    for (int i = 6; i >= 1; i--) {
+      if (prefs.getInt('iqra_bookmark_$i') != null) {
+        highestLevel = i;
+        break;
+      }
+    }
+    
+    final levelData = IqraData.levels.firstWhere((l) => l.level == highestLevel);
+    
+    if (context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => IqraReaderScreen(level: levelData)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,123 +108,129 @@ class HomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: AppSpacing.xl),
-                    // Cartoon Islamic Greeting Card
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(AppRadius.bubble),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withOpacity(0.1),
-                            blurRadius: 30,
-                            offset: const Offset(0, 15),
+                    // Greeting Section
+                    Row(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withOpacity(0.15),
+                                blurRadius: 20,
+                              ),
+                            ],
+                            border: Border.all(color: Colors.white, width: 3),
                           ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          // Mascot Girl (Greeting)
-                          TweenAnimationBuilder<double>(
-                            duration: const Duration(seconds: 2),
-                            tween: Tween(begin: 0, end: 1),
-                            curve: Curves.easeInOut,
-                            builder: (context, value, child) {
-                              return Transform.translate(
-                                offset: Offset(0, 8 * (1 - (value - 0.5).abs() * 2)),
-                                child: child,
-                              );
-                            },
-                            child: Image.asset('assets/images/mascot_muslim_girl.png', width: 80),
-                          ),
-                          const SizedBox(width: AppSpacing.md),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Assalamualaikum Adik!',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: AppColors.textDim,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: AppSpacing.xs),
-                                Text(
-                                  'Mari belajar iqra bersama 😊',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w900,
-                                    color: AppColors.primary,
-                                    height: 1.1,
-                                  ),
-                                ),
-                              ],
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/images/mascot_muslim_boy.png', 
+                              fit: BoxFit.contain,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-                    
-                    // Main Mascot Display
-                    Center(
-                      child: Container(
-                        width: 140,
-                        height: 140,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.15),
-                              blurRadius: 30,
-                              spreadRadius: 2,
-                            ),
-                          ],
                         ),
-                        child: ClipOval(
-                          child: Stack(
-                            alignment: Alignment.center,
+                        const SizedBox(width: AppSpacing.md),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Floating Boy Mascot
-                              TweenAnimationBuilder<double>(
-                                duration: const Duration(seconds: 3),
-                                tween: Tween(begin: 0, end: 1),
-                                curve: Curves.easeInOut,
-                                builder: (context, value, child) {
-                                  return Transform.translate(
-                                    offset: Offset(0, -5 * (1 - (value - 0.5).abs() * 2)),
-                                    child: child,
-                                  );
-                                },
-                                child: Image.asset(
-                                  'assets/images/mascot_muslim_boy.png', 
-                                  width: 110,
-                                  height: 110,
-                                  fit: BoxFit.contain,
+                              Text(
+                                'Assalamualaikum Adik 😊',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Mari kita mulai mengaji hari ini!',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textMain,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
+                      ],
                     ),
                     
+                    const SizedBox(height: AppSpacing.xxl),
+                    
+                    // Main "Mulai Belajar" Button
+                    GestureDetector(
+                      onTap: () => _startLearning(context),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [AppColors.primaryLight, AppColors.primary],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(AppRadius.bubble),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Mulai Belajar',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Lanjutkan bacaan terakhirmu',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 40),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
                     const SizedBox(height: AppSpacing.xl),
                     const Text(
-                      'Pilih Permainan',
+                      'Menu Pembelajaran',
                       style: TextStyle(
-                        fontSize: 22, 
+                        fontSize: 20, 
                         fontWeight: FontWeight.w900, 
                         color: AppColors.textMain,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     
-                    // Bubble Menus
+                    // Menu Grid
                     GridView(
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -213,31 +243,24 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         _buildBubbleCard(
                           context,
-                          title: 'Iqra 1-6',
+                          title: 'Level Iqra',
                           icon: Icons.menu_book_rounded,
                           color: AppColors.skyBlue,
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BelajarIqraScreen())),
                         ),
                         _buildBubbleCard(
                           context,
-                          title: 'Huruf',
-                          icon: Icons.grid_view_rounded,
-                          color: AppColors.accent,
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BelajarHurufScreen())),
-                        ),
-                        _buildBubbleCard(
-                          context,
-                          title: 'Kuis',
+                          title: 'Latihan',
                           icon: Icons.stars_rounded,
                           color: AppColors.softPink,
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LatihanScreen())),
                         ),
                         _buildBubbleCard(
                           context,
-                          title: 'Permainan',
-                          icon: Icons.sports_esports_rounded,
-                          color: const Color(0xFF64B5F6),
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const GameSelectionScreen())),
+                          title: 'Progress',
+                          icon: Icons.auto_graph_rounded,
+                          color: const Color(0xFF66BB6A),
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProgressScreen())),
                         ),
                         _buildBubbleCard(
                           context,
@@ -248,7 +271,6 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: AppSpacing.xxl),
                   ],
                 ),
