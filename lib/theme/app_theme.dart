@@ -24,6 +24,14 @@ class AppTheme {
           letterSpacing: 0.5,
         ),
       ),
+      splashColor: AppColors.primary.withOpacity(0.05),
+      highlightColor: Colors.transparent,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(
           fontSize: 40,

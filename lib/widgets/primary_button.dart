@@ -23,7 +23,6 @@ class PrimaryButton extends StatelessWidget {
     return AnimatedButton(
       onTap: isLoading ? () {} : onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(AppRadius.full),
@@ -35,30 +34,42 @@ class PrimaryButton extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isLoading)
-              const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
-              )
-            else if (icon != null) ...[
-              Icon(icon, color: Colors.white, size: 28),
-              const SizedBox(width: 12),
-            ],
-            if (!isLoading)
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: isLoading ? null : onTap,
+            borderRadius: BorderRadius.circular(AppRadius.full),
+            splashColor: Colors.white.withOpacity(0.2),
+            highlightColor: Colors.transparent,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (isLoading)
+                    const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                    )
+                  else if (icon != null) ...[
+                    Icon(icon, color: Colors.white, size: 28),
+                    const SizedBox(width: 12),
+                  ],
+                  if (!isLoading)
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
               ),
-          ],
+            ),
+          ),
         ),
       ),
     );
