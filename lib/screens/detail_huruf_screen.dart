@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../constants/app_constants.dart';
 import '../widgets/audio_button.dart';
+import '../widgets/custom_app_bar.dart';
 
 class DetailHurufScreen extends StatefulWidget {
   final String char;
@@ -100,99 +101,84 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
           ),
         ),
         child: SafeArea(
-          child: TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 1000),
-            tween: Tween(begin: 0.0, end: 1.0),
-            curve: Curves.easeOutQuart,
-            builder: (context, value, child) {
-              return Opacity(opacity: value, child: child);
-            },
-            child: Column(
-              children: [
-                // Custom App Bar
-                Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Row(
+          child: Column(
+            children: [
+              CustomAppBar(
+                title: 'Detail Huruf',
+                subtitle: 'Suara dan Detail',
+                backgroundColor: Colors.transparent,
+                foregroundColor: widget.color,
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios_new_rounded, color: widget.color.withOpacity(0.7), size: 28),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const Spacer(),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: AppSpacing.lg),
-                        // Letter Container (Glassmorphism inspired)
-                        Hero(
-                          tag: 'letter-${widget.char}',
-                          child: Container(
-                            width: 280,
-                            height: 280,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.8),
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: widget.color.withOpacity(0.15),
-                                  blurRadius: 40,
-                                  spreadRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: Text(
-                                widget.char,
-                                style: TextStyle(
-                                  fontSize: 160,
-                                  fontWeight: FontWeight.bold,
-                                  color: widget.color,
-                                  shadows: [
-                                    Shadow(
-                                      color: widget.color.withOpacity(0.3),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
+                      const SizedBox(height: AppSpacing.lg),
+                      // Letter Container
+                      Hero(
+                        tag: 'letter-${widget.char}',
+                        child: Container(
+                          width: 280,
+                          height: 280,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.8),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: widget.color.withOpacity(0.15),
+                                blurRadius: 40,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              widget.char,
+                              style: TextStyle(
+                                fontSize: 160,
+                                fontWeight: FontWeight.bold,
+                                color: widget.color,
+                                shadows: [
+                                  Shadow(
+                                    color: widget.color.withOpacity(0.3),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.xxl),
-                        // Letter Name
-                        Text(
-                          widget.name,
-                          style: TextStyle(
-                            fontSize: 54,
-                            fontWeight: FontWeight.bold,
-                            color: widget.color.withOpacity(0.8),
-                            letterSpacing: 1.5,
-                          ),
+                      ),
+                      const SizedBox(height: AppSpacing.xxl),
+                      // Letter Name
+                      Text(
+                        widget.name,
+                        style: TextStyle(
+                          fontSize: 54,
+                          fontWeight: FontWeight.bold,
+                          color: widget.color.withOpacity(0.8),
+                          letterSpacing: 1.5,
                         ),
-                        const SizedBox(height: AppSpacing.xxl * 1.5),
-                        // Action Button
-                        AudioButton(
-                          isPlaying: _isPlaying,
-                          isLoading: _isLoading,
-                          onTap: _playSound,
-                          color: widget.color,
-                        ),
-                        const SizedBox(height: AppSpacing.xxl),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: AppSpacing.xxl * 1.5),
+                      // Action Button
+                      AudioButton(
+                        isPlaying: _isPlaying,
+                        isLoading: _isLoading,
+                        onTap: _playSound,
+                        color: widget.color,
+                      ),
+                      const SizedBox(height: AppSpacing.xxl),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/iqra_data.dart';
 import '../constants/app_constants.dart';
 import '../widgets/menu_card.dart';
+import '../widgets/custom_app_bar.dart';
 import 'iqra_reader_screen.dart';
 
 class BelajarIqraScreen extends StatelessWidget {
@@ -12,8 +13,9 @@ class BelajarIqraScreen extends StatelessWidget {
     final levels = IqraData.levels;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pilih Iqra'),
+      appBar: const CustomAppBar(
+        title: 'Pilih Iqra',
+        subtitle: 'Pilih Tingkatan Belajar',
       ),
       body: TweenAnimationBuilder<double>(
         duration: const Duration(milliseconds: 600),

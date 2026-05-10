@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/custom_app_bar.dart';
 
 class TentangScreen extends StatelessWidget {
   const TentangScreen({super.key});
@@ -6,13 +7,9 @@ class TentangScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F8E9),
-      appBar: AppBar(
-        title: const Text('Tentang Aplikasi', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF81C784),
-        foregroundColor: Colors.white,
-        centerTitle: true,
-        elevation: 0,
+      appBar: const CustomAppBar(
+        title: 'Tentang Aplikasi',
+        subtitle: 'Informasi Aplikasi',
       ),
       body: TweenAnimationBuilder<double>(
         duration: const Duration(milliseconds: 800),

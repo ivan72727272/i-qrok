@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/iqra_model.dart';
 import '../widgets/animated_button.dart';
+import '../widgets/custom_app_bar.dart';
 
 class IqraReaderScreen extends StatefulWidget {
   final IqraLevel level;
@@ -79,12 +80,11 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(widget.level.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+      appBar: CustomAppBar(
+        title: widget.level.title,
+        subtitle: 'Belajar Membaca',
         backgroundColor: widget.level.color,
         foregroundColor: Colors.white,
-        centerTitle: true,
-        elevation: 0,
       ),
       body: TweenAnimationBuilder<double>(
         duration: const Duration(milliseconds: 600),

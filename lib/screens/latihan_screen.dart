@@ -3,6 +3,7 @@ import 'package:audioplayers/audioplayers.dart';
 import '../constants/app_constants.dart';
 import '../widgets/animated_button.dart';
 import '../widgets/primary_button.dart';
+import '../widgets/custom_app_bar.dart';
 
 class LatihanScreen extends StatefulWidget {
   const LatihanScreen({super.key});
@@ -216,16 +217,16 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
     double progress = (_currentIndex + 1) / _activeQuizData.length;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Latihan'),
+      appBar: CustomAppBar(
+        title: 'Latihan',
+        subtitle: 'Uji Kemampuanmu',
         actions: [
           Container(
             margin: const EdgeInsets.only(right: AppSpacing.md),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.accent.withOpacity(0.1),
               borderRadius: BorderRadius.circular(AppRadius.lg),
-              boxShadow: const [BoxShadow(color: AppColors.cardShadow, blurRadius: 5)],
             ),
             child: Row(
               children: [
