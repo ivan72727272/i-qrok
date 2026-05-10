@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import '../widgets/animated_button.dart';
 
 class DetailHurufScreen extends StatefulWidget {
   final String char;
@@ -21,47 +22,23 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
   late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
   bool _isLoading = false;
-  late AnimationController _controller;
+  late AnimationController _pulseController;
 
-  // Local mapping for hijaiyah audio files
   final Map<String, String> _audioMapping = {
-    'أ': 'alif.mp3',
-    'ب': 'ba.mp3',
-    'ت': 'ta.mp3',
-    'ث': 'tha.mp3',
-    'ج': 'jim.mp3',
-    'ح': 'ha.mp3',
-    'خ': 'kha.mp3',
-    'د': 'dal.mp3',
-    'ذ': 'dhal.mp3',
-    'ر': 'ra.mp3',
-    'ز': 'zay.mp3',
-    'س': 'sin.mp3',
-    'ش': 'shin.mp3',
-    'ص': 'sad.mp3',
-    'ض': 'dad.mp3',
-    'ط': 'tta.mp3',
-    'ظ': 'za.mp3',
-    'ع': 'ain.mp3',
-    'غ': 'ghain.mp3',
-    'ف': 'fa.mp3',
-    'ق': 'qaf.mp3',
-    'ك': 'kaf.mp3',
-    'ل': 'lam.mp3',
-    'م': 'mim.mp3',
-    'ن': 'nun.mp3',
-    'و': 'waw.mp3',
-    'هـ': 'hha.mp3',
-    'ء': 'hamzah.mp3',
-    'ي': 'ya.mp3',
+    'أ': 'alif.mp3', 'ب': 'ba.mp3', 'ت': 'ta.mp3', 'ث': 'tha.mp3', 'ج': 'jim.mp3',
+    'ح': 'ha.mp3', 'خ': 'kha.mp3', 'د': 'dal.mp3', 'ذ': 'dhal.mp3', 'ر': 'ra.mp3',
+    'ز': 'zay.mp3', 'س': 'sin.mp3', 'ش': 'shin.mp3', 'ص': 'sad.mp3', 'ض': 'dad.mp3',
+    'ط': 'tta.mp3', 'ظ': 'za.mp3', 'ع': 'ain.mp3', 'غ': 'ghain.mp3', 'ف': 'fa.mp3',
+    'ق': 'qaf.mp3', 'ك': 'kaf.mp3', 'ل': 'lam.mp3', 'م': 'mim.mp3', 'ن': 'nun.mp3',
+    'و': 'waw.mp3', 'هـ': 'hha.mp3', 'ء': 'hamzah.mp3', 'ي': 'ya.mp3',
   };
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
 
@@ -70,10 +47,10 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
         setState(() {
           _isPlaying = state == PlayerState.playing;
           if (_isPlaying) {
-            _controller.repeat(reverse: true);
+            _pulseController.repeat(reverse: true);
           } else {
-            _controller.stop();
-            _controller.reset();
+            _pulseController.stop();
+            _pulseController.reset();
           }
         });
       }
@@ -84,8 +61,8 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
         setState(() {
           _isPlaying = false;
           _isLoading = false;
-          _controller.stop();
-          _controller.reset();
+          _pulseController.stop();
+          _pulseController.reset();
         });
       }
     });
@@ -94,37 +71,27 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
   @override
   void dispose() {
     _audioPlayer.dispose();
-    _controller.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
   Future<void> _playSound() async {
     if (_isLoading || _isPlaying) return;
-
     setState(() => _isLoading = true);
-
     try {
       String? fileName = _audioMapping[widget.char];
       if (fileName != null) {
-        await _audioPlayer.stop(); // Stop any current audio
+        await _audioPlayer.stop();
         await _audioPlayer.play(AssetSource('audio/huruf/$fileName'));
-      } else {
-        throw Exception('Audio mapping not found');
       }
     } catch (e) {
-      debugPrint('Error playing audio: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Suara ${widget.name} belum tersedia'),
-            backgroundColor: Colors.redAccent,
-          ),
+          SnackBar(content: Text('Suara ${widget.name} belum tersedia')),
         );
       }
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -136,123 +103,149 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
         height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
-              widget.color.withOpacity(0.1),
-              const Color(0xFFF1F8E9),
+              widget.color.withOpacity(0.08),
+              const Color(0xFFF6F8F2),
+              widget.color.withOpacity(0.05),
             ],
           ),
         ),
         child: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+          child: TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 1000),
+            tween: Tween(begin: 0.0, end: 1.0),
+            curve: Curves.easeOutQuart,
+            builder: (context, value, child) {
+              return Opacity(opacity: value, child: child);
+            },
+            child: Column(
+              children: [
+                // Custom App Bar
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
                     children: [
-                      // Custom AppBar Back Button
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back_ios_new_rounded, color: widget.color, size: 30),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ),
+                      IconButton(
+                        icon: Icon(Icons.arrow_back_ios_new_rounded, color: widget.color.withOpacity(0.7), size: 28),
+                        onPressed: () => Navigator.pop(context),
                       ),
-                      const SizedBox(height: 20),
-                      // Kontainer Huruf Besar dengan Hero Animation
-                      Hero(
-                        tag: 'letter-${widget.char}',
-                        child: Container(
-                          width: MediaQuery.of(context).size.height * 0.3,
-                          height: MediaQuery.of(context).size.height * 0.3,
-                          constraints: const BoxConstraints(
-                            minWidth: 200,
-                            minHeight: 200,
-                            maxWidth: 300,
-                            maxHeight: 300,
-                          ),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: widget.color.withOpacity(0.3),
-                                blurRadius: 30,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Text(
-                              widget.char,
-                              style: TextStyle(
-                                fontSize: MediaQuery.of(context).size.height * 0.18,
-                                fontWeight: FontWeight.bold,
-                                color: widget.color,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      // Nama Huruf
-                      Text(
-                        widget.name,
-                        style: TextStyle(
-                          fontSize: 64,
-                          fontWeight: FontWeight.bold,
-                          color: widget.color.withOpacity(0.8),
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      const SizedBox(height: 60),
-                      // Tombol Putar Suara dengan Efek Animasi
-                      RepaintBoundary(
-                        child: ScaleTransition(
-                          scale: Tween(begin: 1.0, end: 1.1).animate(_controller),
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: widget.color,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(40),
-                              ),
-                              elevation: 10,
-                              shadowColor: widget.color.withOpacity(0.5),
-                            ),
-                            onPressed: _playSound,
-                            icon: _isLoading 
-                              ? const SizedBox(
-                                  width: 24, 
-                                  height: 24, 
-                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3)
-                                )
-                              : Icon(
-                                  _isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
-                                  size: 40,
-                                ),
-                            label: Text(
-                              _isLoading ? 'Memuat...' : (_isPlaying ? 'Mendengarkan...' : 'Putar Suara'),
-                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 40),
+                      const Spacer(),
                     ],
                   ),
                 ),
-              ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+                        // Letter Container (Glassmorphism inspired)
+                        Hero(
+                          tag: 'letter-${widget.char}',
+                          child: Container(
+                            width: 280,
+                            height: 280,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: widget.color.withOpacity(0.15),
+                                  blurRadius: 40,
+                                  spreadRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                widget.char,
+                                style: TextStyle(
+                                  fontSize: 160,
+                                  fontWeight: FontWeight.bold,
+                                  color: widget.color,
+                                  shadows: [
+                                    Shadow(
+                                      color: widget.color.withOpacity(0.3),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        // Letter Name
+                        Text(
+                          widget.name,
+                          style: TextStyle(
+                            fontSize: 54,
+                            fontWeight: FontWeight.bold,
+                            color: widget.color.withOpacity(0.8),
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 80),
+                        // Action Button
+                        AnimatedButton(
+                          onTap: _playSound,
+                          child: RepaintBoundary(
+                            child: ScaleTransition(
+                              scale: Tween(begin: 1.0, end: 1.08).animate(_pulseController),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 24),
+                                decoration: BoxDecoration(
+                                  color: widget.color,
+                                  borderRadius: BorderRadius.circular(100),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: widget.color.withOpacity(0.3),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _isLoading
+                                        ? const SizedBox(
+                                            width: 28,
+                                            height: 28,
+                                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                                          )
+                                        : Icon(
+                                            _isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded,
+                                            color: Colors.white,
+                                            size: 32,
+                                          ),
+                                    const SizedBox(width: 16),
+                                    Text(
+                                      _isLoading ? 'Memuat...' : (_isPlaying ? 'Mendengarkan' : 'Putar Suara'),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
