@@ -157,12 +157,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   const SizedBox(height: AppSpacing.xl),
                   // App Name
                   const Text(
-                    'E-Cro',
+                    'MUSLIM KIDS',
                     style: TextStyle(
-                      fontSize: 72,
+                      fontSize: 42,
                       fontWeight: FontWeight.w900,
                       color: AppColors.primary,
-                      letterSpacing: -2,
+                      letterSpacing: -1,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
@@ -181,9 +181,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       ],
                     ),
                     child: const Text(
-                      'Belajar Iqra Menjadi Lebih Mudah',
+                      'Belajar Islami Menjadi Lebih Menyenangkan',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textMain,
                       ),

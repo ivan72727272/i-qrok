@@ -68,6 +68,11 @@ flutter:
     - assets/audio/sapaan/
     - assets/data/iqra/
     - assets/images/
+    - assets/images/doa/
+    - assets/images/praktik/
+    - assets/images/cerita/
+    - assets/images/ngaji/
+    - assets/images/surah/
     - assets/images/mascot_muslim_boy.png
     - assets/images/mascot_muslim_girl.png
     - assets/images/cute_decorations.png

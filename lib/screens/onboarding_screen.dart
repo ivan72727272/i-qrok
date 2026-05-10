@@ -18,18 +18,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<Map<String, String>> _onboardingData = [
     {
-      'title': 'Belajar Huruf Hijaiyah',
-      'description': 'Mari mulai mengenal huruf dasar Al-Qur\'an dengan cara yang menyenangkan.',
+      'title': 'Belajar Mengaji & Doa',
+      'description': 'Mari mulai mengenal huruf dasar Al-Qur\'an dan menghafal doa sehari-hari.',
       'image': 'assets/images/mascot_muslim_boy.png',
     },
     {
-      'title': 'Belajar Dengan Audio Interaktif',
-      'description': 'Dengarkan cara membaca yang benar dan tirukan suaranya.',
+      'title': 'Belajar Praktik Islami',
+      'description': 'Belajar tata cara wudhu dan sholat dengan panduan visual yang menarik.',
       'image': 'assets/images/mascot_muslim_girl.png',
     },
     {
-      'title': 'Belajar Sampai Bisa Membaca Al-Qur’an',
-      'description': 'Belajar bertahap dari Iqra 1 hingga lancar membaca ayat Al-Qur\'an.',
+      'title': 'Membaca Cerita Islami',
+      'description': 'Kumpulan cerita penuh hikmah untuk membentuk akhlak mulia sejak dini.',
       'image': 'assets/images/cute_mosque.png',
     },
   ];

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+class AppConstants {
+  static const String appName = 'Muslim Kids';
+  static const String appVersion = '2.0.0';
+}
+
 class AppColors {
   static const Color background = Color(0xFFFFFBF0); // Cream
   static const Color primary = Color(0xFF66BB6A); // Hijau Soft
@@ -34,7 +39,6 @@ class AppRadius {
   static const double md = 12.0;
   static const double lg = 16.0;
   static const double xl = 24.0;
-  static const double bubble = 24.0; // Diminished from 40.0
+  static const double bubble = 24.0;
   static const double full = 100.0;
 }
-

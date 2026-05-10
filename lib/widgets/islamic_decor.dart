@@ -26,6 +26,22 @@ class IslamicDecor extends StatelessWidget {
   }
 }
 
+/// A simple single star/icon for use in positioned decorations
+class FloatingStarSingle extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const FloatingStarSingle({super.key, this.size = 12, this.color = Colors.white});
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: 0.4,
+      child: Icon(Icons.auto_awesome_rounded, size: size, color: color),
+    );
+  }
+}
+
 class FloatingStars extends StatelessWidget {
   const FloatingStars({super.key});
 
