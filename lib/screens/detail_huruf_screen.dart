@@ -206,9 +206,10 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
                   ),
                   const Spacer(),
                   // Tombol Putar Suara dengan Efek Animasi
-                  ScaleTransition(
-                    scale: Tween(begin: 1.0, end: 1.1).animate(_controller),
-                    child: ElevatedButton.icon(
+                  RepaintBoundary(
+                    child: ScaleTransition(
+                      scale: Tween(begin: 1.0, end: 1.1).animate(_controller),
+                      child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: widget.color,
                         foregroundColor: Colors.white,

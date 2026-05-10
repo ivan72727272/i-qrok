@@ -300,40 +300,42 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                   const SizedBox(height: 30),
                   
                   // Kartu Huruf Hijaiyah dengan efek pantulan ketika benar/salah
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height: 180,
-                    decoration: BoxDecoration(
-                      color: _hasAnswered ? (_isCorrect ? Colors.green.shade50 : Colors.red.shade50) : Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _hasAnswered 
-                            ? (_isCorrect ? Colors.green.withOpacity(0.4) : Colors.red.withOpacity(0.4))
-                            : Colors.green.withOpacity(0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                      border: Border.all(
-                        color: _hasAnswered 
-                          ? (_isCorrect ? Colors.green : Colors.redAccent) 
-                          : const Color(0xFFAED581), 
-                        width: 4
-                      ),
-                    ),
-                    alignment: Alignment.center,
-                    child: AnimatedScale(
-                      scale: _hasAnswered && _isCorrect ? 1.1 : 1.0,
+                  RepaintBoundary(
+                    child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      child: Text(
-                        currentQuestion['question'],
-                        style: TextStyle(
-                          fontSize: 100,
-                          fontWeight: FontWeight.bold,
+                      height: 180,
+                      decoration: BoxDecoration(
+                        color: _hasAnswered ? (_isCorrect ? Colors.green.shade50 : Colors.red.shade50) : Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _hasAnswered 
+                              ? (_isCorrect ? Colors.green.withOpacity(0.4) : Colors.red.withOpacity(0.4))
+                              : Colors.green.withOpacity(0.2),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                        border: Border.all(
                           color: _hasAnswered 
-                            ? (_isCorrect ? Colors.green.shade700 : Colors.red.shade700) 
-                            : const Color(0xFF2E7D32),
+                            ? (_isCorrect ? Colors.green : Colors.redAccent) 
+                            : const Color(0xFFAED581), 
+                          width: 4
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: AnimatedScale(
+                        scale: _hasAnswered && _isCorrect ? 1.1 : 1.0,
+                        duration: const Duration(milliseconds: 300),
+                        child: Text(
+                          currentQuestion['question'],
+                          style: TextStyle(
+                            fontSize: 100,
+                            fontWeight: FontWeight.bold,
+                            color: _hasAnswered 
+                              ? (_isCorrect ? Colors.green.shade700 : Colors.red.shade700) 
+                              : const Color(0xFF2E7D32),
+                          ),
                         ),
                       ),
                     ),
