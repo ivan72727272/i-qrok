@@ -39,6 +39,10 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
     super.initState();
     _audioPlayer = AudioPlayer();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _playSound();
+    });
+
     _audioPlayer.onPlayerStateChanged.listen((state) {
       if (mounted) {
         setState(() {
@@ -151,19 +155,27 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
                           ),
                           child: Material(
                             color: Colors.transparent,
-                            child: Text(
-                              widget.char,
-                              style: TextStyle(
-                                fontSize: 160,
-                                fontWeight: FontWeight.bold,
-                                color: widget.color,
-                                shadows: [
-                                  Shadow(
-                                    color: widget.color.withOpacity(0.3),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 4),
+                            child: InkWell(
+                              onTap: _playSound,
+                              borderRadius: BorderRadius.circular(140),
+                              splashColor: widget.color.withOpacity(0.3),
+                              highlightColor: Colors.transparent,
+                              child: Center(
+                                child: Text(
+                                  widget.char,
+                                  style: TextStyle(
+                                    fontSize: 160,
+                                    fontWeight: FontWeight.bold,
+                                    color: widget.color,
+                                    shadows: [
+                                      Shadow(
+                                        color: widget.color.withOpacity(0.3),
+                                        blurRadius: 20,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
                           ),
