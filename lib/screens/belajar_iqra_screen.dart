@@ -1,84 +1,104 @@
 import 'package:flutter/material.dart';
+import '../data/iqra_data.dart';
+import 'iqra_reader_screen.dart';
 
 class BelajarIqraScreen extends StatelessWidget {
   const BelajarIqraScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final levels = IqraData.levels;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF1F8E9),
       appBar: AppBar(
-        title: const Text('Belajar Iqra', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Pilih Tingkatan Iqra', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF81C784),
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(30),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 0.85,
+          ),
+          itemCount: levels.length,
+          itemBuilder: (context, index) {
+            final level = levels[index];
+            return InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => IqraReaderScreen(level: level),
+                  ),
+                );
+              },
+              borderRadius: BorderRadius.circular(24),
+              child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.orange.withOpacity(0.3),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
+                      color: level.color.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
                     ),
                   ],
-                  border: Border.all(color: const Color(0xFFFFB74D), width: 5),
+                  border: Border.all(color: level.color.withOpacity(0.3), width: 2),
                 ),
-                child: const Icon(
-                  Icons.construction_rounded,
-                  size: 80,
-                  color: Color(0xFFFF9800),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: level.color.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '${level.level}',
+                        style: TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: level.color,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      level.title,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Text(
+                        level.description,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 40),
-              const Text(
-                'Segera Hadir!',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF388E3C),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Modul Belajar Iqra sedang dalam proses pengembangan.\nNantikan fitur ini segera!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  height: 1.5,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 60),
-              ElevatedButton.icon(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back_rounded, size: 24),
-                label: const Text(
-                  'Kembali ke Beranda',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF81C784),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  elevation: 5,
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
