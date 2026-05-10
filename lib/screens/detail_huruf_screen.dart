@@ -71,11 +71,25 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
       if (fileName != null) {
         await _audioPlayer.stop();
         await _audioPlayer.play(AssetSource('audio/huruf/$fileName'));
+      } else {
+        throw Exception('Audio not mapped');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Suara ${widget.name} belum tersedia')),
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.sentiment_dissatisfied_rounded, color: Colors.white),
+                SizedBox(width: 12),
+                Text('Upss suara belum tersedia 😊'),
+              ],
+            ),
+            backgroundColor: AppColors.primary,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+            duration: const Duration(seconds: 2),
+          ),
         );
       }
     } finally {

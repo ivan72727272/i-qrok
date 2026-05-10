@@ -63,6 +63,8 @@ flutter:
     - assets/audio/
     - assets/audio/huruf/
     - assets/audio/iqra/
+    - assets/audio/angka/
+    - assets/audio/sapaan/
     - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see

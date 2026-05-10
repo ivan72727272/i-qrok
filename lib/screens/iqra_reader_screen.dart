@@ -64,8 +64,17 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Audio belum tersedia untuk halaman ini'),
-            backgroundColor: Colors.redAccent,
+            content: const Row(
+              children: [
+                Icon(Icons.sentiment_dissatisfied_rounded, color: Colors.white),
+                SizedBox(width: 12),
+                Text('Upss suara belum tersedia 😊'),
+              ],
+            ),
+            backgroundColor: AppColors.primary,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
