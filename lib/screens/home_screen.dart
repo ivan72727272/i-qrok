@@ -146,39 +146,45 @@ class HomeScreen extends StatelessWidget {
                     
                     // Main Mascot Display
                     Center(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          // Circle Background
-                          Container(
-                            width: 160,
-                            height: 160,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.2),
-                                  blurRadius: 40,
-                                  spreadRadius: 5,
-                                ),
-                              ],
+                      child: Container(
+                        width: 140,
+                        height: 140,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.15),
+                              blurRadius: 30,
+                              spreadRadius: 2,
                             ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Floating Boy Mascot
+                              TweenAnimationBuilder<double>(
+                                duration: const Duration(seconds: 3),
+                                tween: Tween(begin: 0, end: 1),
+                                curve: Curves.easeInOut,
+                                builder: (context, value, child) {
+                                  return Transform.translate(
+                                    offset: Offset(0, -5 * (1 - (value - 0.5).abs() * 2)),
+                                    child: child,
+                                  );
+                                },
+                                child: Image.asset(
+                                  'assets/images/mascot_muslim_boy.png', 
+                                  width: 110,
+                                  height: 110,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ],
                           ),
-                          // Floating Boy Mascot
-                          TweenAnimationBuilder<double>(
-                            duration: const Duration(seconds: 3),
-                            tween: Tween(begin: 0, end: 1),
-                            curve: Curves.easeInOut,
-                            builder: (context, value, child) {
-                              return Transform.translate(
-                                offset: Offset(0, -15 * (1 - (value - 0.5).abs() * 2)),
-                                child: child,
-                              );
-                            },
-                            child: Image.asset('assets/images/mascot_muslim_boy.png', width: 140),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                     
@@ -186,7 +192,7 @@ class HomeScreen extends StatelessWidget {
                     const Text(
                       'Pilih Permainan',
                       style: TextStyle(
-                        fontSize: 26, 
+                        fontSize: 22, 
                         fontWeight: FontWeight.w900, 
                         color: AppColors.textMain,
                       ),
@@ -194,11 +200,13 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(height: AppSpacing.md),
                     
                     // Bubble Menus
-                    GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: AppSpacing.lg,
-                      mainAxisSpacing: AppSpacing.lg,
-                      childAspectRatio: 0.85,
+                    GridView(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        mainAxisExtent: 130, // Fixed compact height
+                      ),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       children: [

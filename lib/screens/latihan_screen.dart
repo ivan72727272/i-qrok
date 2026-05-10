@@ -280,31 +280,31 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                     );
                   },
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Column(
                       children: [
                         const Text(
                           'Huruf apakah ini?',
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: AppColors.textDim),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textDim),
                         ),
-                        const SizedBox(height: AppSpacing.xl),
+                        const SizedBox(height: 12),
                         // Question Card
                         Container(
                           width: double.infinity,
-                          height: 220,
+                          height: 160, // Tinggi maksimal dikurangi
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(AppRadius.xl),
+                            borderRadius: BorderRadius.circular(24),
                             boxShadow: const [
                               BoxShadow(
                                 color: AppColors.cardShadow,
-                                blurRadius: 20,
-                                offset: Offset(0, 10),
+                                blurRadius: 15,
+                                offset: Offset(0, 8),
                               ),
                             ],
                             border: Border.all(
                               color: _hasAnswered
-                                  ? (_isCorrect ? AppColors.primaryLight : AppColors.error)
+                                  ? (_isCorrect ? AppColors.success : AppColors.error)
                                   : Colors.white,
                               width: 3,
                             ),
@@ -313,29 +313,29 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                           child: Text(
                             currentQuestion['question'],
                             style: TextStyle(
-                              fontSize: 120,
+                              fontSize: 90, // Font dikurangi sedikit agar proporsional
                               fontWeight: FontWeight.bold,
                               color: _hasAnswered
-                                  ? (_isCorrect ? AppColors.primary : const Color(0xFFC62828))
+                                  ? (_isCorrect ? AppColors.success : AppColors.error)
                                   : AppColors.primary,
                             ),
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.xxl),
+                        const SizedBox(height: 16),
                         // Options
                         ...(currentQuestion['options'] as List<String>).map((option) {
                           Color bgColor = _buttonColors[option] ?? Colors.white;
                           Color textColor = _buttonColors.containsKey(option) ? Colors.white : AppColors.textMain;
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                            padding: const EdgeInsets.only(bottom: 8.0), // Spacing kecil
                             child: AnimatedButton(
                               onTap: () => _checkAnswer(option),
                               child: Container(
                                 width: double.infinity,
-                                padding: const EdgeInsets.symmetric(vertical: 20),
+                                padding: const EdgeInsets.symmetric(vertical: 14), // Tinggi tombol diturunkan
                                 decoration: BoxDecoration(
                                   color: bgColor,
-                                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                                  borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
                                     color: _buttonColors.containsKey(option) ? bgColor : Colors.black.withOpacity(0.05),
                                     width: 2,
@@ -344,8 +344,8 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                                     if (!_buttonColors.containsKey(option))
                                       const BoxShadow(
                                         color: AppColors.cardShadow,
-                                        blurRadius: 10,
-                                        offset: Offset(0, 4),
+                                        blurRadius: 8,
+                                        offset: Offset(0, 3),
                                       ),
                                   ],
                                 ),

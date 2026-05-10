@@ -66,52 +66,84 @@ class BelajarHurufScreen extends StatelessWidget {
             },
             child: GridView.builder(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: AppSpacing.lg,
-                mainAxisSpacing: AppSpacing.lg,
-                childAspectRatio: 0.85,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 130,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                mainAxisExtent: 130,
               ),
               itemCount: _hurufList.length,
               itemBuilder: (context, index) {
                 final huruf = _hurufList[index];
-                return MenuCard(
-                  title: huruf['name'],
-                  iconWidget: Hero(
-                    tag: 'letter-${huruf['char']}',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(
-                        huruf['char'],
-                        style: TextStyle(
-                          fontSize: 64,
-                          fontWeight: FontWeight.w900,
-                          color: huruf['color'],
-                          shadows: [
-                            Shadow(
-                              color: huruf['color'].withOpacity(0.3),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: huruf['color'].withOpacity(0.15),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      splashColor: huruf['color'].withOpacity(0.2),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailHurufScreen(
+                              char: huruf['char'],
+                              name: huruf['name'],
+                              color: huruf['color'],
                             ),
-                          ],
-                        ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Hero(
+                            tag: 'letter-${huruf['char']}',
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                huruf['char'],
+                                style: TextStyle(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.w900,
+                                  color: huruf['color'],
+                                  shadows: [
+                                    Shadow(
+                                      color: huruf['color'].withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            huruf['name'],
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textMain,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  color: huruf['color'],
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailHurufScreen(
-                          char: huruf['char'],
-                          name: huruf['name'],
-                          color: huruf['color'],
-                        ),
-                      ),
-                    );
-                  },
                 );
               },
             ),
