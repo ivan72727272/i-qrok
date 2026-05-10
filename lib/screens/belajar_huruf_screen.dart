@@ -15,134 +15,138 @@ class BelajarHurufScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Pastel-inspired color palette for consistency
     final List<HijaiyahLetter> letters = [
-      HijaiyahLetter(char: 'أ', name: 'Alif', color: Colors.redAccent),
-      HijaiyahLetter(char: 'ب', name: 'Ba', color: Colors.blueAccent),
-      HijaiyahLetter(char: 'ت', name: 'Ta', color: Colors.greenAccent.shade700),
-      HijaiyahLetter(char: 'ث', name: 'Tha', color: Colors.orangeAccent),
-      HijaiyahLetter(char: 'ج', name: 'Jim', color: Colors.purpleAccent),
-      HijaiyahLetter(char: 'ح', name: 'Ha', color: Colors.tealAccent.shade700),
-      HijaiyahLetter(char: 'خ', name: 'Kha', color: Colors.pinkAccent),
-      HijaiyahLetter(char: 'د', name: 'Dal', color: Colors.indigoAccent),
-      HijaiyahLetter(char: 'ذ', name: 'Dhal', color: Colors.amberAccent.shade700),
-      HijaiyahLetter(char: 'ر', name: 'Ra', color: Colors.cyanAccent.shade700),
-      HijaiyahLetter(char: 'ز', name: 'Zay', color: Colors.deepOrangeAccent),
-      HijaiyahLetter(char: 'س', name: 'Sin', color: Colors.lightGreenAccent.shade700),
-      HijaiyahLetter(char: 'ش', name: 'Shin', color: Colors.blueGrey),
-      HijaiyahLetter(char: 'ص', name: 'Sad', color: Colors.brown.shade400),
-      HijaiyahLetter(char: 'ض', name: 'Dad', color: Colors.deepPurpleAccent),
-      HijaiyahLetter(char: 'ط', name: 'Ta', color: Colors.red.shade400),
-      HijaiyahLetter(char: 'ظ', name: 'Za', color: Colors.blue.shade700),
-      HijaiyahLetter(char: 'ع', name: '‘Ain', color: Colors.green.shade600),
-      HijaiyahLetter(char: 'غ', name: 'Ghain', color: Colors.orange.shade800),
-      HijaiyahLetter(char: 'ف', name: 'Fa', color: Colors.pink.shade700),
-      HijaiyahLetter(char: 'ق', name: 'Qaf', color: Colors.purple.shade700),
-      HijaiyahLetter(char: 'ك', name: 'Kaf', color: Colors.teal.shade800),
-      HijaiyahLetter(char: 'ل', name: 'Lam', color: Colors.indigo.shade800),
-      HijaiyahLetter(char: 'م', name: 'Mim', color: Colors.lime.shade900),
-      HijaiyahLetter(char: 'ن', name: 'Nun', color: Colors.amber.shade900),
-      HijaiyahLetter(char: 'و', name: 'Waw', color: Colors.cyan.shade900),
-      HijaiyahLetter(char: 'هـ', name: 'Ha', color: Colors.deepOrange.shade900),
-      HijaiyahLetter(char: 'ء', name: 'Hamzah', color: Colors.blueGrey.shade800),
-      HijaiyahLetter(char: 'ي', name: 'Ya', color: Colors.green.shade900),
+      HijaiyahLetter(char: 'أ', name: 'Alif', color: const Color(0xFFFF8A80)),
+      HijaiyahLetter(char: 'ب', name: 'Ba', color: const Color(0xFF81D4FA)),
+      HijaiyahLetter(char: 'ت', name: 'Ta', color: const Color(0xFFA5D6A7)),
+      HijaiyahLetter(char: 'ث', name: 'Tha', color: const Color(0xFFFFCC80)),
+      HijaiyahLetter(char: 'ج', name: 'Jim', color: const Color(0xFFCE93D8)),
+      HijaiyahLetter(char: 'ح', name: 'Ha', color: const Color(0xFF80CBC4)),
+      HijaiyahLetter(char: 'خ', name: 'Kha', color: const Color(0xFFF48FB1)),
+      HijaiyahLetter(char: 'د', name: 'Dal', color: const Color(0xFF9FA8DA)),
+      HijaiyahLetter(char: 'ذ', name: 'Dhal', color: const Color(0xFFFFE082)),
+      HijaiyahLetter(char: 'ر', name: 'Ra', color: const Color(0xFF80DEEA)),
+      HijaiyahLetter(char: 'ز', name: 'Zay', color: const Color(0xFFFFAB91)),
+      HijaiyahLetter(char: 'س', name: 'Sin', color: const Color(0xFFC5E1A5)),
+      HijaiyahLetter(char: 'ش', name: 'Shin', color: const Color(0xFFB0BEC5)),
+      HijaiyahLetter(char: 'ص', name: 'Sad', color: const Color(0xFFBCAAA4)),
+      HijaiyahLetter(char: 'ض', name: 'Dad', color: const Color(0xFFB39DDB)),
+      HijaiyahLetter(char: 'ط', name: 'Ta', color: const Color(0xFFEF9A9A)),
+      HijaiyahLetter(char: 'ظ', name: 'Za', color: const Color(0xFF90CAF9)),
+      HijaiyahLetter(char: 'ع', name: '‘Ain', color: const Color(0xFF81C784)),
+      HijaiyahLetter(char: 'غ', name: 'Ghain', color: const Color(0xFFFFB74D)),
+      HijaiyahLetter(char: 'ف', name: 'Fa', color: const Color(0xFFF06292)),
+      HijaiyahLetter(char: 'ق', name: 'Qaf', color: const Color(0xFFBA68C8)),
+      HijaiyahLetter(char: 'ك', name: 'Kaf', color: const Color(0xFF4DB6AC)),
+      HijaiyahLetter(char: 'ل', name: 'Lam', color: const Color(0xFF7986CB)),
+      HijaiyahLetter(char: 'م', name: 'Mim', color: const Color(0xFFAED581)),
+      HijaiyahLetter(char: 'ن', name: 'Nun', color: const Color(0xFFFFD54F)),
+      HijaiyahLetter(char: 'و', name: 'Waw', color: const Color(0xFF4DD0E1)),
+      HijaiyahLetter(char: 'هـ', name: 'Ha', color: const Color(0xFFFF8A65)),
+      HijaiyahLetter(char: 'ء', name: 'Hamzah', color: const Color(0xFF90A4AE)),
+      HijaiyahLetter(char: 'ي', name: 'Ya', color: const Color(0xFFDCE775)),
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F8E9),
+      backgroundColor: const Color(0xFFF6F8F2),
       appBar: AppBar(
-        title: const Text('Belajar Huruf Hijaiyah'),
+        title: const Text('Belajar Hijaiyah', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        backgroundColor: const Color(0xFF81C784),
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF6F8F2),
+        foregroundColor: const Color(0xFF2E7D32),
+        elevation: 0,
       ),
       body: TweenAnimationBuilder<double>(
-        duration: const Duration(milliseconds: 600),
+        duration: const Duration(milliseconds: 800),
         tween: Tween(begin: 0.0, end: 1.0),
-        curve: Curves.easeOutCubic,
+        curve: Curves.easeOutQuart,
         builder: (context, value, child) {
           return Opacity(
             opacity: value,
             child: Transform.translate(
-              offset: Offset(0, 30 * (1 - value)),
+              offset: Offset(0, 40 * (1 - value)),
               child: child,
             ),
           );
         },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 120,
-              crossAxisSpacing: 15,
-              mainAxisSpacing: 15,
-              childAspectRatio: 0.85,
-            ),
-            itemCount: letters.length,
-            itemBuilder: (context, index) {
-              final letter = letters[index];
-              return AnimatedButton(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: const Duration(milliseconds: 500),
-                      pageBuilder: (context, animation, secondaryAnimation) => DetailHurufScreen(
-                        char: letter.char,
-                        name: letter.name,
-                        color: letter.color,
-                      ),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        return FadeTransition(opacity: animation, child: child);
-                      },
+        child: GridView.builder(
+          padding: const EdgeInsets.fromLTRB(24, 10, 24, 40),
+          physics: const BouncingScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 160,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+            childAspectRatio: 0.85,
+          ),
+          itemCount: letters.length,
+          itemBuilder: (context, index) {
+            final letter = letters[index];
+            return AnimatedButton(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    transitionDuration: const Duration(milliseconds: 400),
+                    pageBuilder: (context, animation, secondaryAnimation) => DetailHurufScreen(
+                      char: letter.char,
+                      name: letter.name,
+                      color: letter.color,
                     ),
-                  );
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: letter.color.withOpacity(0.15),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                    border: Border.all(
-                      color: letter.color.withOpacity(0.4),
-                      width: 2.5,
-                    ),
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Hero(
-                        tag: 'letter-${letter.char}',
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: Colors.black.withOpacity(0.05),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Hero(
+                      tag: 'letter-${letter.char}',
+                      child: Material(
+                        color: Colors.transparent,
                         child: Text(
                           letter.char,
                           style: TextStyle(
-                            fontSize: 52,
+                            fontSize: 60,
                             fontWeight: FontWeight.bold,
                             color: letter.color,
-                            decoration: TextDecoration.none,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        letter.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black45,
-                        ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      letter.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade400,
+                        letterSpacing: 0.5,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
