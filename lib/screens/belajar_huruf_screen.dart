@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
 import '../widgets/menu_card.dart';
 import '../widgets/custom_app_bar.dart';
+import '../widgets/islamic_decor.dart';
 import 'detail_huruf_screen.dart';
 
 class BelajarHurufScreen extends StatelessWidget {

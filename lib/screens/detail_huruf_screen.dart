@@ -75,6 +75,7 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
         throw Exception('Audio not mapped');
       }
     } catch (e) {
+      debugPrint("Audio tidak ditemukan: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -82,10 +83,10 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
               children: [
                 Icon(Icons.sentiment_dissatisfied_rounded, color: Colors.white),
                 SizedBox(width: 12),
-                Text('Upss suara belum tersedia 😊'),
+                Text('Audio tidak ditemukan 😊'),
               ],
             ),
-            backgroundColor: AppColors.primary,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
             duration: const Duration(seconds: 2),

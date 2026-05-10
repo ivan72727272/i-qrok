@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/iqra_model.dart';
+import '../constants/app_constants.dart';
 import '../widgets/animated_button.dart';
 import '../widgets/custom_app_bar.dart';
 

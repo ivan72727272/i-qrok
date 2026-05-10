@@ -12,6 +12,8 @@ class MenuCard extends StatelessWidget {
   final Color? iconColor;
   final VoidCallback onTap;
 
+  static final AudioPlayer _sharedPlayer = AudioPlayer();
+
   const MenuCard({
     super.key,
     required this.title,
@@ -24,11 +26,11 @@ class MenuCard extends StatelessWidget {
   });
 
   Future<void> _playNavSound() async {
-    final player = AudioPlayer();
     try {
-      await player.play(AssetSource('audio/sapaan/click.mp3'));
+      await _sharedPlayer.stop();
+      await _sharedPlayer.play(AssetSource('audio/sapaan/click.mp3'));
     } catch (e) {
-      // Ignore if sound not found
+      debugPrint('Error playing nav sound: $e');
     }
   }
 
@@ -59,45 +61,57 @@ class MenuCard extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: onTap,
+            onTap: () async {
+              await _playNavSound();
+              onTap();
+            },
             borderRadius: BorderRadius.circular(AppRadius.bubble),
             splashColor: color.withOpacity(0.2),
             highlightColor: Colors.transparent,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.15),
-                    shape: BoxShape.circle,
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: color.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: iconWidget ?? Icon(icon, size: 42, color: iconColor ?? color),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textMain,
+                          height: 1.1,
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          subtitle!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textDim,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
-                  child: iconWidget ?? Icon(icon, size: 48, color: iconColor ?? color),
                 ),
-                const SizedBox(height: AppSpacing.md),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.textMain,
-                    height: 1.1,
-                  ),
-                ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    subtitle!,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textDim,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ],
+              ),
             ),
           ),
         ),
