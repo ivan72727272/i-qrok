@@ -30,16 +30,25 @@ class MenuCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(AppRadius.xl),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
               color: AppColors.cardShadow,
-              blurRadius: 20,
-              offset: Offset(0, 10),
+              blurRadius: 30,
+              offset: const Offset(0, 15),
+              spreadRadius: -5,
             ),
           ],
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.white,
+              AppColors.background.withOpacity(0.3),
+            ],
+          ),
           border: Border.all(
-            color: Colors.black.withOpacity(0.03),
-            width: 1,
+            color: Colors.white,
+            width: 1.5,
           ),
         ),
         child: Material(

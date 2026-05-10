@@ -62,6 +62,8 @@ class BelajarHurufScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.lg),
           child: GridView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: AppSpacing.xl),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: AppSpacing.lg,

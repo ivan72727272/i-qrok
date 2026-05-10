@@ -167,12 +167,17 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.xxl),
+                      const SizedBox(height: AppSpacing.lg),
                       const Text(
                         'Pilih Menu',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textMain),
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textMain,
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                      const SizedBox(height: AppSpacing.md + 4),
+                      const SizedBox(height: AppSpacing.md),
                       Expanded(
                         child: GridView.count(
                           crossAxisCount: 2,

@@ -6,13 +6,15 @@ class AppColors {
   static const Color primaryLight = Color(0xFF81C784);
   static const Color accent = Color(0xFFFFB74D);
   static const Color accentLight = Color(0xFFFFE0B2);
+  static const Color success = Color(0xFF4CAF50);
+  static const Color warning = Color(0xFFFF9800);
   static const Color info = Color(0xFF81D4FA);
   static const Color infoLight = Color(0xFFE1F5FE);
-  static const Color error = Color(0xFFEF9A9A);
+  static const Color error = Color(0xFFEF5350);
   static const Color errorLight = Color(0xFFFCE4EC);
-  static const Color textMain = Colors.black87;
-  static const Color textDim = Colors.black54;
-  static const Color cardShadow = Color(0x0A000000); // Very soft shadow
+  static const Color textMain = Color(0xFF263238);
+  static const Color textDim = Color(0xFF546E7A);
+  static const Color cardShadow = Color(0x12000000); 
 }
 
 class AppSpacing {
