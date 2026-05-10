@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../widgets/animated_button.dart';
+import '../constants/app_constants.dart';
+import '../widgets/audio_button.dart';
 
 class DetailHurufScreen extends StatefulWidget {
   final String char;
@@ -22,7 +23,6 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
   late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
   bool _isLoading = false;
-  late AnimationController _pulseController;
 
   final Map<String, String> _audioMapping = {
     'أ': 'alif.mp3', 'ب': 'ba.mp3', 'ت': 'ta.mp3', 'ث': 'tha.mp3', 'ج': 'jim.mp3',
@@ -37,21 +37,11 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
 
     _audioPlayer.onPlayerStateChanged.listen((state) {
       if (mounted) {
         setState(() {
           _isPlaying = state == PlayerState.playing;
-          if (_isPlaying) {
-            _pulseController.repeat(reverse: true);
-          } else {
-            _pulseController.stop();
-            _pulseController.reset();
-          }
         });
       }
     });
@@ -61,8 +51,6 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
         setState(() {
           _isPlaying = false;
           _isLoading = false;
-          _pulseController.stop();
-          _pulseController.reset();
         });
       }
     });
@@ -71,7 +59,6 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
   @override
   void dispose() {
     _audioPlayer.dispose();
-    _pulseController.dispose();
     super.dispose();
   }
 
@@ -107,7 +94,7 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
             end: Alignment.bottomRight,
             colors: [
               widget.color.withOpacity(0.08),
-              const Color(0xFFF6F8F2),
+              AppColors.background,
               widget.color.withOpacity(0.05),
             ],
           ),
@@ -124,7 +111,7 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
               children: [
                 // Custom App Bar
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
                       IconButton(
@@ -140,7 +127,7 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 20),
+                        const SizedBox(height: AppSpacing.lg),
                         // Letter Container (Glassmorphism inspired)
                         Hero(
                           tag: 'letter-${widget.char}',
@@ -180,7 +167,7 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
                             ),
                           ),
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: AppSpacing.xxl),
                         // Letter Name
                         Text(
                           widget.name,
@@ -191,56 +178,15 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
                             letterSpacing: 1.5,
                           ),
                         ),
-                        const SizedBox(height: 80),
+                        const SizedBox(height: AppSpacing.xxl * 1.5),
                         // Action Button
-                        AnimatedButton(
+                        AudioButton(
+                          isPlaying: _isPlaying,
+                          isLoading: _isLoading,
                           onTap: _playSound,
-                          child: RepaintBoundary(
-                            child: ScaleTransition(
-                              scale: Tween(begin: 1.0, end: 1.08).animate(_pulseController),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 24),
-                                decoration: BoxDecoration(
-                                  color: widget.color,
-                                  borderRadius: BorderRadius.circular(100),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: widget.color.withOpacity(0.3),
-                                      blurRadius: 15,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _isLoading
-                                        ? const SizedBox(
-                                            width: 28,
-                                            height: 28,
-                                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
-                                          )
-                                        : Icon(
-                                            _isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded,
-                                            color: Colors.white,
-                                            size: 32,
-                                          ),
-                                    const SizedBox(width: 16),
-                                    Text(
-                                      _isLoading ? 'Memuat...' : (_isPlaying ? 'Mendengarkan' : 'Putar Suara'),
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                          color: widget.color,
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: AppSpacing.xxl),
                       ],
                     ),
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../widgets/animated_button.dart';
+import '../constants/app_constants.dart';
+import '../widgets/menu_card.dart';
 import 'belajar_huruf_screen.dart';
 import 'belajar_iqra_screen.dart';
 import 'latihan_screen.dart';
@@ -18,8 +19,8 @@ class HomeScreen extends StatelessWidget {
         final bool shouldPop = await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-            title: const Text('Keluar Aplikasi?', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
+            title: const Text('Keluar Aplikasi?', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
             content: const Text('Apakah kamu yakin ingin keluar dari E-Cro?'),
             actions: [
               TextButton(
@@ -31,10 +32,10 @@ class HomeScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(true),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent.shade100,
+                    backgroundColor: AppColors.error,
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
                   ),
                   child: const Text('Keluar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
@@ -48,7 +49,6 @@ class HomeScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF6F8F2),
         body: SafeArea(
           child: TweenAnimationBuilder<double>(
             duration: const Duration(milliseconds: 1000),
@@ -64,11 +64,11 @@ class HomeScreen extends StatelessWidget {
               );
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: AppSpacing.xxl),
                   // Header dengan Greeting
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -82,68 +82,68 @@ class HomeScreen extends StatelessWidget {
                                 'Assalamu\'alaikum,',
                                 style: TextStyle(
                                   fontSize: 18,
-                                  color: Colors.black54,
+                                  color: AppColors.textDim,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              Icon(Icons.auto_awesome_rounded, size: 18, color: Colors.orangeAccent.shade200),
+                              const SizedBox(width: AppSpacing.sm),
+                              Icon(Icons.auto_awesome_rounded, size: 18, color: AppColors.accent),
                             ],
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSpacing.xs),
                           const Text(
                             'Adik Sholeh! 👋',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF2E7D32),
+                              color: AppColors.primary,
                               letterSpacing: -0.5,
                             ),
                           ),
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(AppSpacing.sm + 4),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: AppColors.cardShadow,
                               blurRadius: 10,
-                              offset: const Offset(0, 4),
+                              offset: Offset(0, 4),
                             ),
                           ],
                         ),
-                        child: const Icon(Icons.person_rounded, color: Color(0xFF81C784), size: 30),
+                        child: const Icon(Icons.person_rounded, color: AppColors.primaryLight, size: 30),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: AppSpacing.xxl),
                   // Banner Kecil / Subtitle
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(AppSpacing.md + 4),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [const Color(0xFF81C784), const Color(0xFFAED581)],
+                      gradient: const LinearGradient(
+                        colors: [AppColors.primaryLight, AppColors.primary],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF81C784).withOpacity(0.3),
+                          color: AppColors.primary.withOpacity(0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 8),
                         ),
                       ],
                     ),
-                    child: Row(
+                    child: const Row(
                       children: [
-                        const Icon(Icons.lightbulb_rounded, color: Colors.white, size: 40),
-                        const SizedBox(width: 16),
-                        const Expanded(
+                        Icon(Icons.lightbulb_rounded, color: Colors.white, size: 40),
+                        SizedBox(width: AppSpacing.md),
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -161,123 +161,55 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 40),
-                  // Menu Grid
+                  const SizedBox(height: AppSpacing.xxl),
                   const Text(
                     'Pilih Menu',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textMain),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.md + 4),
                   Expanded(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        return GridView.count(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
-                          childAspectRatio: 0.9,
-                          physics: const BouncingScrollPhysics(),
-                          children: [
-                            _buildModernMenuCard(
-                              context,
-                              title: 'Belajar Huruf',
-                              subtitle: 'Kenali Hijaiyah',
-                              icon: Icons.abc_rounded,
-                              color: const Color(0xFFFFE0B2),
-                              iconColor: Colors.orangeAccent.shade700,
-                              screen: const BelajarHurufScreen(),
-                            ),
-                            _buildModernMenuCard(
-                              context,
-                              title: 'Belajar Iqra',
-                              subtitle: 'Membaca Lancar',
-                              icon: Icons.menu_book_rounded,
-                              color: const Color(0xFFE1F5FE),
-                              iconColor: Colors.lightBlueAccent.shade700,
-                              screen: const BelajarIqraScreen(),
-                            ),
-                            _buildModernMenuCard(
-                              context,
-                              title: 'Latihan',
-                              subtitle: 'Asah Kemampuan',
-                              icon: Icons.create_rounded,
-                              color: const Color(0xFFF1F8E9),
-                              iconColor: Colors.lightGreenAccent.shade700,
-                              screen: const LatihanScreen(),
-                            ),
-                            _buildModernMenuCard(
-                              context,
-                              title: 'Tentang',
-                              subtitle: 'Info Aplikasi',
-                              icon: Icons.favorite_rounded,
-                              color: const Color(0xFFFCE4EC),
-                              iconColor: Colors.pinkAccent.shade100,
-                              screen: const TentangScreen(),
-                            ),
-                          ],
-                        );
-                      },
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: AppSpacing.lg,
+                      mainAxisSpacing: AppSpacing.lg,
+                      childAspectRatio: 0.9,
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        MenuCard(
+                          title: 'Belajar Huruf',
+                          subtitle: 'Kenali Hijaiyah',
+                          icon: Icons.abc_rounded,
+                          color: AppColors.accent,
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BelajarHurufScreen())),
+                        ),
+                        MenuCard(
+                          title: 'Belajar Iqra',
+                          subtitle: 'Membaca Lancar',
+                          icon: Icons.menu_book_rounded,
+                          color: AppColors.info,
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BelajarIqraScreen())),
+                        ),
+                        MenuCard(
+                          title: 'Latihan',
+                          subtitle: 'Asah Kemampuan',
+                          icon: Icons.create_rounded,
+                          color: AppColors.primaryLight,
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LatihanScreen())),
+                        ),
+                        MenuCard(
+                          title: 'Tentang',
+                          subtitle: 'Info Aplikasi',
+                          icon: Icons.favorite_rounded,
+                          color: AppColors.error,
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TentangScreen())),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildModernMenuCard(
-    BuildContext context, {
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required Color iconColor,
-    required Widget screen,
-  }) {
-    return AnimatedButton(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => screen),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(32),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 40, color: iconColor),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
-            ),
-          ],
         ),
       ),
     );

@@ -39,114 +39,67 @@ class BelajarHurufScreen extends StatelessWidget {
       HijaiyahLetter(char: 'ف', name: 'Fa', color: const Color(0xFFF06292)),
       HijaiyahLetter(char: 'ق', name: 'Qaf', color: const Color(0xFFBA68C8)),
       HijaiyahLetter(char: 'ك', name: 'Kaf', color: const Color(0xFF4DB6AC)),
-      HijaiyahLetter(char: 'ل', name: 'Lam', color: const Color(0xFF7986CB)),
-      HijaiyahLetter(char: 'م', name: 'Mim', color: const Color(0xFFAED581)),
-      HijaiyahLetter(char: 'ن', name: 'Nun', color: const Color(0xFFFFD54F)),
-      HijaiyahLetter(char: 'و', name: 'Waw', color: const Color(0xFF4DD0E1)),
-      HijaiyahLetter(char: 'هـ', name: 'Ha', color: const Color(0xFFFF8A65)),
-      HijaiyahLetter(char: 'ء', name: 'Hamzah', color: const Color(0xFF90A4AE)),
-      HijaiyahLetter(char: 'ي', name: 'Ya', color: const Color(0xFFDCE775)),
-    ];
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8F2),
       appBar: AppBar(
-        title: const Text('Belajar Hijaiyah', style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        backgroundColor: const Color(0xFFF6F8F2),
-        foregroundColor: const Color(0xFF2E7D32),
-        elevation: 0,
+        title: const Text('Belajar Huruf'),
       ),
       body: TweenAnimationBuilder<double>(
-        duration: const Duration(milliseconds: 800),
+        duration: const Duration(milliseconds: 600),
         tween: Tween(begin: 0.0, end: 1.0),
-        curve: Curves.easeOutQuart,
+        curve: Curves.easeOutCubic,
         builder: (context, value, child) {
           return Opacity(
             opacity: value,
             child: Transform.translate(
-              offset: Offset(0, 40 * (1 - value)),
+              offset: Offset(0, 30 * (1 - value)),
               child: child,
             ),
           );
         },
-        child: GridView.builder(
-          padding: const EdgeInsets.fromLTRB(24, 10, 24, 40),
-          physics: const BouncingScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 160,
-            crossAxisSpacing: 20,
-            mainAxisSpacing: 20,
-            childAspectRatio: 0.85,
-          ),
-          itemCount: letters.length,
-          itemBuilder: (context, index) {
-            final letter = letters[index];
-            return AnimatedButton(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    transitionDuration: const Duration(milliseconds: 400),
-                    pageBuilder: (context, animation, secondaryAnimation) => DetailHurufScreen(
-                      char: letter.char,
-                      name: letter.name,
-                      color: letter.color,
-                    ),
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                  ),
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(32),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                  border: Border.all(
-                    color: Colors.black.withOpacity(0.05),
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Hero(
-                      tag: 'letter-${letter.char}',
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Text(
-                          letter.char,
-                          style: TextStyle(
-                            fontSize: 60,
-                            fontWeight: FontWeight.bold,
-                            color: letter.color,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      letter.name,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: AppSpacing.lg,
+              mainAxisSpacing: AppSpacing.lg,
+              childAspectRatio: 0.9,
+            ),
+            itemCount: _hurufList.length,
+            itemBuilder: (context, index) {
+              final huruf = _hurufList[index];
+              return MenuCard(
+                title: huruf['name'],
+                iconWidget: Hero(
+                  tag: 'letter-${huruf['char']}',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      huruf['char'],
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 48,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade400,
-                        letterSpacing: 0.5,
+                        color: huruf['color'],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            );
-          },
+                color: huruf['color'],
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailHurufScreen(
+                        char: huruf['char'],
+                        name: huruf['name'],
+                        color: huruf['color'],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

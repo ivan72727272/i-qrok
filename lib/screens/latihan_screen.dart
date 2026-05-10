@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import '../constants/app_constants.dart';
 import '../widgets/animated_button.dart';
+import '../widgets/primary_button.dart';
 
 class LatihanScreen extends StatefulWidget {
   const LatihanScreen({super.key});
@@ -100,12 +102,12 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
       _isCorrect = isAnswerCorrect;
       
       if (isAnswerCorrect) {
-        _buttonColors[selectedAnswer] = const Color(0xFFA5D6A7); // Pastel Green
+        _buttonColors[selectedAnswer] = AppColors.primaryLight;
         if (_isFirstAttempt) {
           _score += 20;
         }
       } else {
-        _buttonColors[selectedAnswer] = const Color(0xFFEF9A9A); // Pastel Red
+        _buttonColors[selectedAnswer] = AppColors.error;
         _isFirstAttempt = false; 
       }
     });
@@ -124,12 +126,8 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
 
   Widget _buildResultScreen() {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8F2),
       appBar: AppBar(
-        title: const Text('Latihan Selesai', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFFF6F8F2),
-        foregroundColor: const Color(0xFF2E7D32),
-        elevation: 0,
+        title: const Text('Latihan Selesai'),
       ),
       body: TweenAnimationBuilder<double>(
         duration: const Duration(milliseconds: 800),
@@ -146,82 +144,60 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
         },
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
                   'Hebat! 🎉',
-                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
+                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: AppColors.primary),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: AppSpacing.sm),
                 const Text(
                   'Kamu sudah menyelesaikan latihan.',
-                  style: TextStyle(fontSize: 16, color: Colors.black54),
+                  style: TextStyle(fontSize: 16, color: AppColors.textDim),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: AppSpacing.xxl),
                 Container(
                   padding: const EdgeInsets.all(50),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: AppColors.cardShadow,
                         blurRadius: 30,
-                        offset: const Offset(0, 15),
+                        offset: Offset(0, 15),
                       ),
                     ],
-                    border: Border.all(color: const Color(0xFFFFCC80), width: 8),
+                    border: Border.all(color: AppColors.accent, width: 8),
                   ),
                   child: Column(
                     children: [
                       const Text(
                         'SKOR',
-                        style: TextStyle(fontSize: 20, color: Colors.grey, fontWeight: FontWeight.w900, letterSpacing: 2),
+                        style: TextStyle(fontSize: 20, color: AppColors.textDim, fontWeight: FontWeight.w900, letterSpacing: 2),
                       ),
                       Text(
                         '$_score',
-                        style: const TextStyle(fontSize: 100, fontWeight: FontWeight.w900, color: Color(0xFFFFB74D)),
+                        style: const TextStyle(fontSize: 100, fontWeight: FontWeight.w900, color: AppColors.accent),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 60),
-                AnimatedButton(
+                const SizedBox(height: AppSpacing.xxl * 1.5),
+                PrimaryButton(
+                  label: 'Coba Lagi',
                   onTap: _startNewQuiz,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF81D4FA),
-                      borderRadius: BorderRadius.circular(100),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF81D4FA).withOpacity(0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.refresh_rounded, color: Colors.white, size: 28),
-                        SizedBox(width: 12),
-                        Text(
-                          'Coba Lagi',
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ),
+                  icon: Icons.refresh_rounded,
+                  color: AppColors.info,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.lg),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     'Kembali ke Beranda',
-                    style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w600),
+                    style: TextStyle(fontSize: 18, color: AppColors.textDim, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -240,29 +216,24 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
     double progress = (_currentIndex + 1) / _activeQuizData.length;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8F2),
       appBar: AppBar(
-        title: const Text('Latihan', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFFF6F8F2),
-        foregroundColor: const Color(0xFF2E7D32),
-        elevation: 0,
-        centerTitle: true,
+        title: const Text('Latihan'),
         actions: [
           Container(
-            margin: const EdgeInsets.only(right: 16),
+            margin: const EdgeInsets.only(right: AppSpacing.md),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)],
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              boxShadow: const [BoxShadow(color: AppColors.cardShadow, blurRadius: 5)],
             ),
             child: Row(
               children: [
-                const Icon(Icons.stars_rounded, color: Color(0xFFFFB74D), size: 24),
+                const Icon(Icons.stars_rounded, color: AppColors.accent, size: 24),
                 const SizedBox(width: 4),
                 Text(
                   '$_score',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFFFB74D)),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.accent),
                 ),
               ],
             ),
@@ -273,13 +244,13 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
         children: [
           // Progress Bar
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               child: LinearProgressIndicator(
                 value: progress,
                 backgroundColor: Colors.black.withOpacity(0.05),
-                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF81C784)),
+                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primaryLight),
                 minHeight: 10,
               ),
             ),
@@ -299,31 +270,31 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                 );
               },
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Column(
                   children: [
                     const Text(
                       'Huruf apakah ini?',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: Colors.black54),
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: AppColors.textDim),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: AppSpacing.xl),
                     // Question Card
                     Container(
                       width: double.infinity,
                       height: 220,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(32),
-                        boxShadow: [
+                        borderRadius: BorderRadius.circular(AppRadius.xl),
+                        boxShadow: const [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
+                            color: AppColors.cardShadow,
                             blurRadius: 20,
-                            offset: const Offset(0, 10),
+                            offset: Offset(0, 10),
                           ),
                         ],
                         border: Border.all(
                           color: _hasAnswered
-                              ? (_isCorrect ? const Color(0xFF81C784) : const Color(0xFFEF9A9A))
+                              ? (_isCorrect ? AppColors.primaryLight : AppColors.error)
                               : Colors.white,
                           width: 3,
                         ),
@@ -335,18 +306,18 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                           fontSize: 120,
                           fontWeight: FontWeight.bold,
                           color: _hasAnswered
-                              ? (_isCorrect ? const Color(0xFF2E7D32) : const Color(0xFFC62828))
-                              : const Color(0xFF2E7D32),
+                              ? (_isCorrect ? AppColors.primary : const Color(0xFFC62828))
+                              : AppColors.primary,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: AppSpacing.xxl),
                     // Options
                     ...(currentQuestion['options'] as List<String>).map((option) {
                       Color bgColor = _buttonColors[option] ?? Colors.white;
-                      Color textColor = _buttonColors.containsKey(option) ? Colors.white : Colors.black87;
+                      Color textColor = _buttonColors.containsKey(option) ? Colors.white : AppColors.textMain;
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.only(bottom: AppSpacing.md),
                         child: AnimatedButton(
                           onTap: () => _checkAnswer(option),
                           child: Container(
@@ -354,17 +325,17 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             decoration: BoxDecoration(
                               color: bgColor,
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
                               border: Border.all(
                                 color: _buttonColors.containsKey(option) ? bgColor : Colors.black.withOpacity(0.05),
                                 width: 2,
                               ),
                               boxShadow: [
                                 if (!_buttonColors.containsKey(option))
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.03),
+                                  const BoxShadow(
+                                    color: AppColors.cardShadow,
                                     blurRadius: 10,
-                                    offset: const Offset(0, 4),
+                                    offset: Offset(0, 4),
                                   ),
                               ],
                             ),
@@ -377,7 +348,7 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                         ),
                       );
                     }),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.md),
                     // Feedback & Next Button
                     if (_hasAnswered)
                       Column(
@@ -387,38 +358,16 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: _isCorrect ? const Color(0xFF2E7D32) : const Color(0xFFC62828),
+                              color: _isCorrect ? AppColors.primary : const Color(0xFFC62828),
                             ),
                           ),
                           if (_isCorrect) ...[
-                            const SizedBox(height: 20),
-                            AnimatedButton(
+                            const SizedBox(height: AppSpacing.lg),
+                            PrimaryButton(
+                              label: 'Lanjut',
                               onTap: _nextQuestion,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF81C784),
-                                  borderRadius: BorderRadius.circular(100),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFF81C784).withOpacity(0.3),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Lanjut',
-                                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                                    ),
-                                    SizedBox(width: 8),
-                                    Icon(Icons.arrow_forward_rounded, color: Colors.white),
-                                  ],
-                                ),
-                              ),
+                              icon: Icons.arrow_forward_rounded,
+                              color: AppColors.primaryLight,
                             ),
                           ],
                         ],
