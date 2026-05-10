@@ -20,7 +20,41 @@ class DetailHurufScreen extends StatefulWidget {
 class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTickerProviderStateMixin {
   late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
+  bool _isLoading = false;
   late AnimationController _controller;
+
+  // Local mapping for hijaiyah audio files
+  final Map<String, String> _audioMapping = {
+    'أ': 'alif.mp3',
+    'ب': 'ba.mp3',
+    'ت': 'ta.mp3',
+    'ث': 'tha.mp3',
+    'ج': 'jim.mp3',
+    'ح': 'ha.mp3',
+    'خ': 'kha.mp3',
+    'د': 'dal.mp3',
+    'ذ': 'dhal.mp3',
+    'ر': 'ra.mp3',
+    'ز': 'zay.mp3',
+    'س': 'sin.mp3',
+    'ش': 'shin.mp3',
+    'ص': 'sad.mp3',
+    'ض': 'dad.mp3',
+    'ط': 'tta.mp3',
+    'ظ': 'za.mp3',
+    'ع': 'ain.mp3',
+    'غ': 'ghain.mp3',
+    'ف': 'fa.mp3',
+    'ق': 'qaf.mp3',
+    'ك': 'kaf.mp3',
+    'ل': 'lam.mp3',
+    'م': 'mim.mp3',
+    'ن': 'nun.mp3',
+    'و': 'waw.mp3',
+    'هـ': 'hha.mp3',
+    'ء': 'hamzah.mp3',
+    'ي': 'ya.mp3',
+  };
 
   @override
   void initState() {
@@ -44,6 +78,17 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
         });
       }
     });
+
+    _audioPlayer.onPlayerComplete.listen((event) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = false;
+          _isLoading = false;
+          _controller.stop();
+          _controller.reset();
+        });
+      }
+    });
   }
 
   @override
@@ -54,14 +99,31 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
   }
 
   Future<void> _playSound() async {
+    if (_isLoading || _isPlaying) return;
+
+    setState(() => _isLoading = true);
+
     try {
-      String fileName = '${widget.name.toLowerCase()}.mp3';
-      await _audioPlayer.play(AssetSource('audio/$fileName'));
+      String? fileName = _audioMapping[widget.char];
+      if (fileName != null) {
+        await _audioPlayer.stop(); // Stop any current audio
+        await _audioPlayer.play(AssetSource('audio/huruf/$fileName'));
+      } else {
+        throw Exception('Audio mapping not found');
+      }
     } catch (e) {
+      debugPrint('Error playing audio: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Suara ${widget.name} segera hadir!')),
+          SnackBar(
+            content: Text('Suara ${widget.name} belum tersedia'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -158,12 +220,18 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTicker
                         shadowColor: widget.color.withOpacity(0.5),
                       ),
                       onPressed: _playSound,
-                      icon: Icon(
-                        _isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
-                        size: 40,
-                      ),
+                      icon: _isLoading 
+                        ? const SizedBox(
+                            width: 24, 
+                            height: 24, 
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3)
+                          )
+                        : Icon(
+                            _isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
+                            size: 40,
+                          ),
                       label: Text(
-                        _isPlaying ? 'Mendengarkan...' : 'Putar Suara',
+                        _isLoading ? 'Memuat...' : (_isPlaying ? 'Mendengarkan...' : 'Putar Suara'),
                         style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                     ),
