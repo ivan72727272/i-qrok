@@ -92,67 +92,72 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 40),
-                    // Menu Grid 2x2
                     Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 20,
-                        mainAxisSpacing: 20,
-                        childAspectRatio: 1.0,
-                        children: [
-                          AnimatedButton(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const BelajarHurufScreen()),
-                              );
-                            },
-                            child: _buildMenuButtonContent(
-                              title: 'Belajar\nHuruf',
-                              icon: Icons.abc_rounded,
-                              color: Colors.orangeAccent,
-                            ),
-                          ),
-                          AnimatedButton(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const BelajarIqraScreen()),
-                              );
-                            },
-                            child: _buildMenuButtonContent(
-                              title: 'Belajar\nIqra',
-                              icon: Icons.menu_book_rounded,
-                              color: Colors.lightBlueAccent,
-                            ),
-                          ),
-                          AnimatedButton(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const LatihanScreen()),
-                              );
-                            },
-                            child: _buildMenuButtonContent(
-                              title: 'Latihan',
-                              icon: Icons.edit_note_rounded,
-                              color: Colors.lightGreenAccent.shade700,
-                            ),
-                          ),
-                          AnimatedButton(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const TentangScreen()),
-                              );
-                            },
-                            child: _buildMenuButtonContent(
-                              title: 'Tentang',
-                              icon: Icons.info_outline_rounded,
-                              color: Colors.pinkAccent.shade100,
-                            ),
-                          ),
-                        ],
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          // Menyesuaikan rasio kartu berdasarkan lebar layar
+                          double aspectRatio = constraints.maxWidth > 500 ? 1.2 : 1.0;
+                          return GridView.count(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 20,
+                            mainAxisSpacing: 20,
+                            childAspectRatio: aspectRatio,
+                            children: [
+                              AnimatedButton(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const BelajarHurufScreen()),
+                                  );
+                                },
+                                child: _buildMenuButtonContent(
+                                  title: 'Belajar\nHuruf',
+                                  icon: Icons.abc_rounded,
+                                  color: Colors.orangeAccent,
+                                ),
+                              ),
+                              AnimatedButton(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const BelajarIqraScreen()),
+                                  );
+                                },
+                                child: _buildMenuButtonContent(
+                                  title: 'Belajar\nIqra',
+                                  icon: Icons.menu_book_rounded,
+                                  color: Colors.lightBlueAccent,
+                                ),
+                              ),
+                              AnimatedButton(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const LatihanScreen()),
+                                  );
+                                },
+                                child: _buildMenuButtonContent(
+                                  title: 'Latihan',
+                                  icon: Icons.edit_note_rounded,
+                                  color: Colors.lightGreenAccent.shade700,
+                                ),
+                              ),
+                              AnimatedButton(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const TentangScreen()),
+                                  );
+                                },
+                                child: _buildMenuButtonContent(
+                                  title: 'Tentang',
+                                  icon: Icons.info_outline_rounded,
+                                  color: Colors.pinkAccent.shade100,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
                       ),
                     ),
                   ],

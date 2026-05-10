@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/iqra_model.dart';
+import '../widgets/animated_button.dart';
 
 class IqraReaderScreen extends StatefulWidget {
   final IqraLevel level;
@@ -79,138 +80,174 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(widget.level.title),
+        title: Text(widget.level.title, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: widget.level.color,
         foregroundColor: Colors.white,
         centerTitle: true,
+        elevation: 0,
       ),
-      body: Column(
-        children: [
-          // Progress Bar
-          LinearProgressIndicator(
-            value: (widget.level.pages.isEmpty) ? 0 : (_currentPage + 1) / widget.level.pages.length,
-            backgroundColor: widget.level.color.withOpacity(0.1),
-            valueColor: AlwaysStoppedAnimation<Color>(widget.level.color),
-          ),
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: widget.level.pages.length,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                  _audioPlayer.stop();
-                  _isPlaying = false;
-                });
-              },
-              itemBuilder: (context, index) {
-                final page = widget.level.pages[index];
-                return Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Arabic Text
-                      Container(
-                        padding: const EdgeInsets.all(40),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(color: widget.level.color.withOpacity(0.2), width: 2),
-                        ),
-                        child: Text(
-                          page.arabic,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 72,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                            fontFamily: 'Regular', // Use default or specific Arabic font if available
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      // Latin Transliteration
-                      Text(
-                        page.latin,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w500,
-                          color: widget.level.color,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 60),
-                      // Play Audio Button
-                      GestureDetector(
-                        onTap: _playAudio,
-                        child: Container(
-                          width: 100,
-                          height: 100,
+      body: TweenAnimationBuilder<double>(
+        duration: const Duration(milliseconds: 600),
+        tween: Tween(begin: 0.0, end: 1.0),
+        curve: Curves.easeOutCubic,
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: child,
+          );
+        },
+        child: Column(
+          children: [
+            // Progress Bar
+            LinearProgressIndicator(
+              value: (widget.level.pages.isEmpty) ? 0 : (_currentPage + 1) / widget.level.pages.length,
+              backgroundColor: widget.level.color.withOpacity(0.1),
+              valueColor: AlwaysStoppedAnimation<Color>(widget.level.color),
+              minHeight: 6,
+            ),
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: widget.level.pages.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                    _audioPlayer.stop();
+                    _isPlaying = false;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  final page = widget.level.pages[index];
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+                        // Arabic Text Container
+                        Container(
+                          width: double.infinity,
+                          constraints: const BoxConstraints(minHeight: 250),
+                          padding: const EdgeInsets.all(30),
                           decoration: BoxDecoration(
-                            color: widget.level.color,
-                            shape: BoxShape.circle,
+                            color: Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(color: widget.level.color.withOpacity(0.2), width: 3),
                             boxShadow: [
                               BoxShadow(
-                                color: widget.level.color.withOpacity(0.4),
-                                blurRadius: 15,
-                                offset: const Offset(0, 8),
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
                               ),
                             ],
                           ),
-                          child: _isLoading
-                              ? const Padding(
-                                  padding: EdgeInsets.all(25.0),
-                                  child: CircularProgressIndicator(color: Colors.white),
-                                )
-                              : Icon(
-                                  _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                                  size: 60,
-                                  color: Colors.white,
-                                ),
+                          child: Center(
+                            child: Text(
+                              page.arabic,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 80,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 30),
+                        // Latin Transliteration
+                        Text(
+                          page.latin,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: widget.level.color,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        // Play Audio Button
+                        AnimatedButton(
+                          onTap: _playAudio,
+                          child: Container(
+                            width: 110,
+                            height: 110,
+                            decoration: BoxDecoration(
+                              color: widget.level.color,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: widget.level.color.withOpacity(0.4),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: _isLoading
+                                ? const Padding(
+                                    padding: EdgeInsets.all(30.0),
+                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 4),
+                                  )
+                                : Icon(
+                                    _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                                    size: 70,
+                                    color: Colors.white,
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Navigation Buttons
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
                   ),
-                );
-              },
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildNavButton(
+                    icon: Icons.arrow_back_ios_new_rounded,
+                    label: 'Kembali',
+                    onPressed: _currentPage > 0
+                        ? () => _pageController.previousPage(
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeOutCubic,
+                            )
+                        : null,
+                  ),
+                  Text(
+                    '${_currentPage + 1} / ${widget.level.pages.length}',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
+                  ),
+                  _buildNavButton(
+                    icon: Icons.arrow_forward_ios_rounded,
+                    label: 'Lanjut',
+                    onPressed: _currentPage < widget.level.pages.length - 1
+                        ? () => _pageController.nextPage(
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeOutCubic,
+                            )
+                        : null,
+                    isForward: true,
+                  ),
+                ],
+              ),
             ),
-          ),
-          // Navigation Buttons
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildNavButton(
-                  icon: Icons.arrow_back_ios_new_rounded,
-                  label: 'Sebelumnya',
-                  onPressed: _currentPage > 0
-                      ? () => _pageController.previousPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          )
-                      : null,
-                ),
-                Text(
-                  'Halaman ${_currentPage + 1} / ${widget.level.pages.length}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
-                ),
-                _buildNavButton(
-                  icon: Icons.arrow_forward_ios_rounded,
-                  label: 'Selanjutnya',
-                  onPressed: _currentPage < widget.level.pages.length - 1
-                      ? () => _pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          )
-                      : null,
-                  isForward: true,
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -221,30 +258,31 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
     VoidCallback? onPressed,
     bool isForward = false,
   }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: widget.level.color,
-        elevation: 2,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-          side: BorderSide(color: onPressed != null ? widget.level.color : Colors.grey.shade300),
+    return AnimatedButton(
+      onTap: onPressed ?? () {},
+      child: Opacity(
+        opacity: onPressed == null ? 0.5 : 1.0,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: onPressed != null ? widget.level.color : Colors.grey.shade300, width: 2),
+          ),
+          child: Row(
+            children: isForward
+                ? [
+                    Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: widget.level.color)),
+                    const SizedBox(width: 8),
+                    Icon(icon, size: 20, color: widget.level.color),
+                  ]
+                : [
+                    Icon(icon, size: 20, color: widget.level.color),
+                    const SizedBox(width: 8),
+                    Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: widget.level.color)),
+                  ],
+          ),
         ),
-      ),
-      child: Row(
-        children: isForward
-            ? [
-                Text(label),
-                const SizedBox(width: 8),
-                Icon(icon, size: 18),
-              ]
-            : [
-                Icon(icon, size: 18),
-                const SizedBox(width: 8),
-                Text(label),
-              ],
       ),
     );
   }

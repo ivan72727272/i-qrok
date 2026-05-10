@@ -47,6 +47,36 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Logo Utama
+            TweenAnimationBuilder<double>(
+              duration: const Duration(seconds: 1),
+              tween: Tween(begin: 0.0, end: 1.0),
+              curve: Curves.elasticOut,
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: child,
+                );
+              },
+              child: Container(
+                width: 180,
+                height: 180,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Image.asset('assets/images/logo.png'),
+              ),
+            ),
+            const SizedBox(height: 30),
             // Teks besar "E-Cro"
             const Text(
               'E-Cro',
@@ -63,7 +93,8 @@ class _SplashScreenState extends State<SplashScreen> {
               'Belajar Iqra untuk Anak',
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.white70,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
                 fontStyle: FontStyle.italic,
               ),
             ),

@@ -6,7 +6,7 @@ class TentangScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F8E9), // Warna latar yang lembut
+      backgroundColor: const Color(0xFFF1F8E9),
       appBar: AppBar(
         title: const Text('Tentang Aplikasi', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF81C784),
@@ -14,110 +14,112 @@ class TentangScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: SingleChildScrollView(
-            child: Padding(
+      body: TweenAnimationBuilder<double>(
+        duration: const Duration(milliseconds: 800),
+        tween: Tween(begin: 0.0, end: 1.0),
+        curve: Curves.easeOutCubic,
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, 30 * (1 - value)),
+              child: child,
+            ),
+          );
+        },
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Ikon Aplikasi
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.green.withOpacity(0.2),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Logo Aplikasi
+                  Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.15),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.menu_book_rounded,
-                  size: 80,
-                  color: Color(0xFF4CAF50),
-                ),
-              ),
-              const SizedBox(height: 30),
-              
-              // Nama Aplikasi
-              const Text(
-                'E-Cro',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2E7D32),
-                  letterSpacing: 2,
-                ),
-              ),
-              const SizedBox(height: 16),
-              
-              // Versi Aplikasi
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF4FC3F7),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  'Versi 1.0',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    padding: const EdgeInsets.all(20),
+                    child: Image.asset('assets/images/logo.png'),
                   ),
-                ),
+                  const SizedBox(height: 30),
+                  
+                  const Text(
+                    'E-Cro',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2E7D32),
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4FC3F7),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Versi 1.0.0',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  
+                  const Text(
+                    'E-Cro adalah aplikasi edukasi interaktif yang dirancang khusus untuk membantu anak-anak belajar membaca Al-Qur\'an melalui metode Iqra dengan cara yang menyenangkan, mudah, dan sepenuhnya offline.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 17,
+                      height: 1.6,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  
+                  const Divider(color: Color(0xFFAED581), thickness: 1.5),
+                  const SizedBox(height: 30),
+                  
+                  const Text(
+                    'Dikembangkan dengan ❤️ untuk\nGenerasi Qur\'ani',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black54,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    '© 2026 E-Cro Team',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
               ),
-              const SizedBox(height: 30),
-              
-              // Deskripsi Singkat
-              const Text(
-                'Aplikasi belajar membaca Iqra\nuntuk anak-anak secara offline',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  height: 1.5,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 50),
-              
-              // Garis Pemisah
-              const Divider(
-                color: Color(0xFFAED581),
-                thickness: 2,
-                indent: 50,
-                endIndent: 50,
-              ),
-              const SizedBox(height: 30),
-              
-              // Nama Pembuat
-              const Text(
-                'Dibuat oleh:',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Antigravity',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF388E3C),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-        ),
         ),
       ),
     );
