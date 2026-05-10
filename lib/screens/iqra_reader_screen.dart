@@ -62,6 +62,7 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
       await _audioPlayer.stop();
       await _audioPlayer.play(AssetSource('audio/iqra/${page.audioPath}'));
     } catch (e) {
+      debugPrint('Audio Iqra tidak ditemukan: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -72,7 +73,7 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
                 Text('Upss suara belum tersedia 😊'),
               ],
             ),
-            backgroundColor: AppColors.primary,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
             duration: const Duration(seconds: 2),
