@@ -22,10 +22,22 @@ class MenuCard extends StatelessWidget {
     required this.onTap,
   });
 
+  Future<void> _playNavSound() async {
+    final player = AudioPlayer();
+    try {
+      await player.play(AssetSource('audio/sapaan/click.mp3'));
+    } catch (e) {
+      // Ignore if sound not found
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedButton(
-      onTap: onTap,
+      onTap: () async {
+        await _playNavSound();
+        onTap();
+      },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,

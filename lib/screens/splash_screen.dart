@@ -14,6 +14,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _floatingAnimation;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -26,6 +27,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _floatingAnimation = Tween<double>(begin: 0, end: 15).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
+
+    _playGreeting();
 
     Timer(const Duration(seconds: 4), () {
       if (mounted) {
@@ -42,8 +45,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     });
   }
 
+  Future<void> _playGreeting() async {
+    try {
+      await Future.delayed(const Duration(milliseconds: 800));
+      await _audioPlayer.play(AssetSource('audio/sapaan/assalamualaikum.mp3'));
+    } catch (e) {
+      debugPrint('Error playing greeting: $e');
+    }
+  }
+
   @override
   void dispose() {
+    _audioPlayer.dispose();
     _controller.dispose();
     super.dispose();
   }
