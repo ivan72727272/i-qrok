@@ -7,6 +7,7 @@ import 'belajar_huruf_screen.dart';
 import 'belajar_iqra_screen.dart';
 import 'latihan_screen.dart';
 import 'tentang_screen.dart';
+import 'game_selection_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -233,13 +234,21 @@ class HomeScreen extends StatelessWidget {
                         ),
                         _buildBubbleCard(
                           context,
-                          title: 'Speaker',
-                          icon: Icons.volume_up_rounded,
+                          title: 'Permainan',
+                          icon: Icons.sports_esports_rounded,
+                          color: const Color(0xFF64B5F6),
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const GameSelectionScreen())),
+                        ),
+                        _buildBubbleCard(
+                          context,
+                          title: 'Tentang',
+                          icon: Icons.info_rounded,
                           color: AppColors.sunnyYellow,
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TentangScreen())),
                         ),
                       ],
                     ),
+
                     const SizedBox(height: AppSpacing.xxl),
                   ],
                 ),
