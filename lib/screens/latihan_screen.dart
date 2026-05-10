@@ -266,158 +266,185 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
           ),
         ],
       ),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                    'Soal ${_currentIndex + 1} / ${_activeQuizData.length}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  const Text(
-                    'Tebak Huruf Berikut',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF388E3C), 
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  
-                  // Kartu Huruf Hijaiyah dengan efek pantulan ketika benar/salah
-                  RepaintBoundary(
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      height: 180,
-                      decoration: BoxDecoration(
-                        color: _hasAnswered ? (_isCorrect ? Colors.green.shade50 : Colors.red.shade50) : Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: _hasAnswered 
-                              ? (_isCorrect ? Colors.green.withOpacity(0.4) : Colors.red.withOpacity(0.4))
-                              : Colors.green.withOpacity(0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                        border: Border.all(
-                          color: _hasAnswered 
-                            ? (_isCorrect ? Colors.green : Colors.redAccent) 
-                            : const Color(0xFFAED581), 
-                          width: 4
+      body: TweenAnimationBuilder<double>(
+        duration: const Duration(milliseconds: 600),
+        tween: Tween(begin: 0.0, end: 1.0),
+        curve: Curves.easeOutCubic,
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, 30 * (1 - value)),
+              child: child,
+            ),
+          );
+        },
+        child: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Soal ${_currentIndex + 1} / ${_activeQuizData.length}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
                         ),
                       ),
-                      alignment: Alignment.center,
-                      child: AnimatedScale(
-                        scale: _hasAnswered && _isCorrect ? 1.1 : 1.0,
-                        duration: const Duration(milliseconds: 300),
-                        child: Text(
-                          currentQuestion['question'],
-                          style: TextStyle(
-                            fontSize: 100,
-                            fontWeight: FontWeight.bold,
-                            color: _hasAnswered 
-                              ? (_isCorrect ? Colors.green.shade700 : Colors.red.shade700) 
-                              : const Color(0xFF2E7D32),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 30),
-                  
-                  // Tombol Pilihan Jawaban
-                  ...(currentQuestion['options'] as List<String>).map((option) {
-                    Color buttonColor = _buttonColors[option] ?? const Color(0xFF4FC3F7);
-                    
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        curve: Curves.easeInOut,
-                        child: ElevatedButton(
-                          onPressed: () => _checkAnswer(option),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonColor,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 22), // Lebih tebal
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25), // Lebih bulat
-                            ),
-                            elevation: _buttonColors.containsKey(option) ? 2 : 8, // Efek tertekan
-                          ),
-                          child: Text(
-                            option,
-                            style: const TextStyle(
-                              fontSize: 26, // Font lebih besar
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 2.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-
-                  // Pesan & Tombol Soal Berikutnya
-                  if (_hasAnswered) ...[
-                    const SizedBox(height: 10),
-                    AnimatedOpacity(
-                      opacity: 1.0,
-                      duration: const Duration(milliseconds: 400),
-                      child: Text(
-                        _isCorrect ? 'Hebat! Benar! 🎉' : 'Ups, Coba Lagi! 🤔',
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Tebak Huruf Berikut',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: _isCorrect ? Colors.green.shade700 : Colors.red.shade600,
+                          color: Color(0xFF388E3C),
                         ),
                       ),
-                    ),
-                    if (_isCorrect) ...[
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        onPressed: _nextQuestion,
-                        icon: const Icon(Icons.arrow_forward_rounded, size: 28),
-                        label: const Text(
-                          'Lanjut',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFB74D), 
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
+                      const SizedBox(height: 30),
+                      // Kartu Huruf Hijaiyah dengan efek pantulan ketika benar/salah
+                      RepaintBoundary(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: 180,
+                          decoration: BoxDecoration(
+                            color: _hasAnswered ? (_isCorrect ? Colors.green.shade50 : Colors.red.shade50) : Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: _hasAnswered 
+                                  ? (_isCorrect ? Colors.green.withOpacity(0.4) : Colors.red.withOpacity(0.4))
+                                  : Colors.green.withOpacity(0.2),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                            border: Border.all(
+                              color: _hasAnswered 
+                                ? (_isCorrect ? Colors.green : Colors.redAccent) 
+                                : const Color(0xFFAED581), 
+                              width: 4
+                            ),
                           ),
-                          elevation: 8,
+                          alignment: Alignment.center,
+                          child: AnimatedScale(
+                            scale: _hasAnswered && _isCorrect ? 1.1 : 1.0,
+                            duration: const Duration(milliseconds: 300),
+                            child: Text(
+                              currentQuestion['question'],
+                              style: TextStyle(
+                                fontSize: 100,
+                                fontWeight: FontWeight.bold,
+                                color: _hasAnswered 
+                                  ? (_isCorrect ? Colors.green.shade700 : Colors.red.shade700) 
+                                  : const Color(0xFF2E7D32),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ]
-                  ],
-                ],
+                      const SizedBox(height: 30),
+                      // Tombol Pilihan Jawaban
+                      ...(currentQuestion['options'] as List<String>).map((option) {
+                        Color buttonColor = _buttonColors[option] ?? const Color(0xFF4FC3F7);
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: AnimatedButton(
+                            onTap: () => _checkAnswer(option),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeInOut,
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 22),
+                              decoration: BoxDecoration(
+                                color: buttonColor,
+                                borderRadius: BorderRadius.circular(25),
+                                boxShadow: [
+                                  if (!_buttonColors.containsKey(option))
+                                    const BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 8,
+                                      offset: Offset(0, 4),
+                                    ),
+                                ],
+                              ),
+                              child: Text(
+                                option,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  letterSpacing: 2.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                      // Pesan & Tombol Soal Berikutnya
+                      if (_hasAnswered) ...[
+                        const SizedBox(height: 10),
+                        AnimatedOpacity(
+                          opacity: 1.0,
+                          duration: const Duration(milliseconds: 400),
+                          child: Text(
+                            _isCorrect ? 'Hebat! Benar! 🎉' : 'Ups, Coba Lagi! 🤔',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: _isCorrect ? Colors.green.shade700 : Colors.red.shade600,
+                            ),
+                          ),
+                        ),
+                        if (_isCorrect) ...[
+                          const SizedBox(height: 16),
+                          AnimatedButton(
+                            onTap: _nextQuestion,
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFB74D),
+                                borderRadius: BorderRadius.circular(25),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 8,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.arrow_forward_rounded, size: 28, color: Colors.white),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Lanjut',
+                                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ]
+                      ],
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/animated_button.dart';
 import 'detail_huruf_screen.dart';
 
 class HijaiyahLetter {
@@ -54,21 +55,32 @@ class BelajarHurufScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF81C784),
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 120,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 15,
-            childAspectRatio: 0.85,
-          ),
-          itemCount: letters.length,
-          itemBuilder: (context, index) {
-            final letter = letters[index];
-            return Material(
-              color: Colors.transparent,
-              child: InkWell(
+      body: TweenAnimationBuilder<double>(
+        duration: const Duration(milliseconds: 600),
+        tween: Tween(begin: 0.0, end: 1.0),
+        curve: Curves.easeOutCubic,
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, 30 * (1 - value)),
+              child: child,
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 120,
+              crossAxisSpacing: 15,
+              mainAxisSpacing: 15,
+              childAspectRatio: 0.85,
+            ),
+            itemCount: letters.length,
+            itemBuilder: (context, index) {
+              final letter = letters[index];
+              return AnimatedButton(
                 onTap: () {
                   Navigator.push(
                     context,
@@ -85,8 +97,7 @@ class BelajarHurufScreen extends StatelessWidget {
                     ),
                   );
                 },
-                borderRadius: BorderRadius.circular(24),
-                child: Ink(
+                child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
@@ -129,9 +140,9 @@ class BelajarHurufScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
