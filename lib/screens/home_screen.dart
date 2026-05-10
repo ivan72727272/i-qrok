@@ -50,181 +50,196 @@ class HomeScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
+        backgroundColor: AppColors.background,
         body: Stack(
           children: [
-            // Floating Decorative Elements
+            // Decorative Background Elements
+            Positioned(
+              top: -50,
+              right: -50,
+              child: Opacity(
+                opacity: 0.1,
+                child: Image.asset('assets/images/cute_decorations.png', width: 250),
+              ),
+            ),
             const FloatingStars(),
             
             SafeArea(
-              child: TweenAnimationBuilder<double>(
-                duration: const Duration(milliseconds: 1000),
-                tween: Tween(begin: 0.0, end: 1.0),
-                curve: Curves.easeOutQuart,
-                builder: (context, value, child) {
-                  return Opacity(
-                    opacity: value,
-                    child: Transform.translate(
-                      offset: Offset(0, 30 * (1 - value)),
-                      child: child,
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: AppSpacing.xxl),
-                      // Header dengan Greeting
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: AppSpacing.xl),
+                    // Kid-Friendly Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Assalamu\'alaikum,',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: AppColors.textDim,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const SizedBox(width: AppSpacing.sm),
-                                  Icon(Icons.auto_awesome_rounded, size: 18, color: AppColors.accent),
-                                ],
+                              const Text(
+                                'Assalamualaikum Adik! 😊',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  color: AppColors.textDim,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               const SizedBox(height: AppSpacing.xs),
                               const Text(
-                                'Adik Sholeh! 👋',
+                                'Yuk Belajar Iqra!',
                                 style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 34,
+                                  fontWeight: FontWeight.w900,
                                   color: AppColors.primary,
-                                  letterSpacing: -0.5,
+                                  letterSpacing: -1,
                                 ),
                               ),
                             ],
                           ),
-                          Container(
-                            padding: const EdgeInsets.all(AppSpacing.sm + 4),
+                        ),
+                        // Mascot Boy Floating Animation
+                        TweenAnimationBuilder<double>(
+                          duration: const Duration(seconds: 2),
+                          tween: Tween(begin: 0, end: 1),
+                          curve: Curves.easeInOut,
+                          builder: (context, value, child) {
+                            return Transform.translate(
+                              offset: Offset(0, 10 * (1 - (value - 0.5).abs() * 2)),
+                              child: child,
+                            );
+                          },
+                          onEnd: () {}, // Handled by standard loop if needed, but for simple floating it's fine
+                          child: Container(
+                            height: 100,
+                            width: 100,
                             decoration: BoxDecoration(
-                              color: Colors.white,
                               shape: BoxShape.circle,
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: AppColors.cardShadow,
-                                  blurRadius: 10,
-                                  offset: Offset(0, 4),
-                                ),
-                              ],
+                              color: AppColors.primary.withOpacity(0.1),
+                              border: Border.all(color: Colors.white, width: 3),
                             ),
-                            child: const Icon(Icons.face_retouching_natural_rounded, color: AppColors.primaryLight, size: 30),
+                            child: ClipOval(
+                              child: Image.asset('assets/images/mascot_muslim_boy.png', fit: BoxFit.cover),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    // Playful Banner
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [AppColors.skyBlue, AppColors.primary],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.bubble),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.skyBlue.withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppSpacing.xxl),
-                      // Banner Kecil / Subtitle
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(AppSpacing.md + 4),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.primaryLight, AppColors.primary],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'MasyaAllah Hebat!',
+                                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
+                                ),
+                                const Text(
+                                  'Ayo semangat belajarnya!',
+                                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
                           ),
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.3),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.lightbulb_circle_rounded, color: Colors.white, size: 44),
-                            SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Ayo Belajar!',
-                                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    'Membaca Iqra jadi lebih seru.',
-                                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                          Image.asset('assets/images/mascot_muslim_girl.png', width: 70),
+                        ],
                       ),
-                      const SizedBox(height: AppSpacing.lg),
-                      const Text(
-                        'Pilih Menu',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textMain,
-                          letterSpacing: -0.5,
-                        ),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    const Text(
+                      'Pilih Permainan',
+                      style: TextStyle(
+                        fontSize: 26, 
+                        fontWeight: FontWeight.w900, 
+                        color: AppColors.textMain,
+                        letterSpacing: -0.5,
                       ),
-                      const SizedBox(height: AppSpacing.md),
-                      Expanded(
-                        child: GridView.count(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: AppSpacing.lg,
-                          mainAxisSpacing: AppSpacing.lg,
-                          childAspectRatio: 0.9,
-                          physics: const BouncingScrollPhysics(),
-                          children: [
-                            MenuCard(
-                              title: 'Belajar Huruf',
-                              subtitle: 'Kenali Hijaiyah',
-                              icon: Icons.grid_view_rounded,
-                              color: AppColors.accent,
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BelajarHurufScreen())),
-                            ),
-                            MenuCard(
-                              title: 'Belajar Iqra',
-                              subtitle: 'Membaca Lancar',
-                              icon: Icons.menu_book_rounded,
-                              color: AppColors.info,
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BelajarIqraScreen())),
-                            ),
-                            MenuCard(
-                              title: 'Latihan',
-                              subtitle: 'Asah Kemampuan',
-                              icon: Icons.quiz_rounded,
-                              color: AppColors.primaryLight,
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LatihanScreen())),
-                            ),
-                            MenuCard(
-                              title: 'Tentang',
-                              subtitle: 'Info Aplikasi',
-                              icon: Icons.info_outline_rounded,
-                              color: AppColors.error,
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TentangScreen())),
-                            ),
-                          ],
-                        ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Expanded(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: AppSpacing.lg,
+                        mainAxisSpacing: AppSpacing.lg,
+                        childAspectRatio: 0.85,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+                        children: [
+                          _buildBubbleCard(
+                            context,
+                            title: 'Belajar\nHuruf',
+                            icon: Icons.abc_rounded,
+                            color: AppColors.accent,
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BelajarHurufScreen())),
+                          ),
+                          _buildBubbleCard(
+                            context,
+                            title: 'Belajar\nIqra',
+                            icon: Icons.auto_stories_rounded,
+                            color: AppColors.skyBlue,
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BelajarIqraScreen())),
+                          ),
+                          _buildBubbleCard(
+                            context,
+                            title: 'Kuis\nSeru',
+                            icon: Icons.videogame_asset_rounded,
+                            color: AppColors.softPink,
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LatihanScreen())),
+                          ),
+                          _buildBubbleCard(
+                            context,
+                            title: 'Tentang\nE-Cro',
+                            icon: Icons.stars_rounded,
+                            color: AppColors.sunnyYellow,
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TentangScreen())),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBubbleCard(BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return MenuCard(
+      title: title,
+      icon: icon,
+      color: color,
+      onTap: onTap,
     );
   }
 }

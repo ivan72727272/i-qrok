@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
+import '../widgets/islamic_decor.dart';
 import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -58,57 +59,30 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFE8F5E9), // Soft Green
-              Color(0xFFF6F8F2), // Cream
+              AppColors.background,
+              AppColors.infoLight,
+              AppColors.primaryLight,
             ],
           ),
         ),
         child: Stack(
           children: [
-            // Islamic Pattern Background (Translucent)
-            Positioned.fill(
-              child: Opacity(
-                opacity: 0.03,
-                child: GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                  ),
-                  itemBuilder: (context, index) => const Icon(Icons.all_inclusive_rounded, size: 80),
-                ),
-              ),
-            ),
-            // Floating Stars & Moon
+            // Decorative Elements
+            const FloatingStars(),
             Positioned(
-              top: 100,
-              right: 60,
+              bottom: -50,
+              left: -50,
               child: Opacity(
-                opacity: 0.4,
-                child: Icon(Icons.brightness_2_rounded, size: 60, color: AppColors.accent),
+                opacity: 0.1,
+                child: Image.asset('assets/images/cute_decorations.png', width: 300),
               ),
             ),
-            Positioned(
-              top: 150,
-              left: 40,
-              child: Opacity(
-                opacity: 0.3,
-                child: Icon(Icons.star_rounded, size: 24, color: AppColors.accent),
-              ),
-            ),
-            Positioned(
-              bottom: 120,
-              right: 80,
-              child: Opacity(
-                opacity: 0.2,
-                child: Icon(Icons.star_rounded, size: 32, color: AppColors.accent),
-              ),
-            ),
-            // Main Content
+            
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo with Floating Animation
+                  // Logo with Mascot
                   AnimatedBuilder(
                     animation: _floatingAnimation,
                     builder: (context, child) {
@@ -124,61 +98,68 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       builder: (context, value, child) {
                         return Transform.scale(
                           scale: value,
-                          child: Opacity(opacity: value, child: child),
+                          child: child,
                         );
                       },
-                      child: Container(
-                        width: 180,
-                        height: 180,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.15),
-                              blurRadius: 40,
-                              offset: const Offset(0, 10),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 220,
+                            height: 220,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withOpacity(0.2),
+                                  blurRadius: 40,
+                                  spreadRadius: 10,
+                                ),
+                              ],
+                              border: Border.all(color: Colors.white, width: 4),
                             ),
-                          ],
-                          border: Border.all(color: Colors.white, width: 4),
-                        ),
-                        padding: const EdgeInsets.all(32),
-                        child: const Icon(
-                          Icons.menu_book_rounded,
-                          size: 100,
-                          color: AppColors.primary,
-                        ),
+                          ),
+                          Image.asset(
+                            'assets/images/mascot_muslim_boy.png',
+                            width: 180,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: AppSpacing.xl),
                   // App Name
                   const Text(
                     'E-Cro',
                     style: TextStyle(
-                      fontSize: 64,
+                      fontSize: 72,
                       fontWeight: FontWeight.w900,
                       color: AppColors.primary,
-                      letterSpacing: 2,
+                      letterSpacing: -2,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  // Tagline
-                  TweenAnimationBuilder<double>(
-                    duration: const Duration(milliseconds: 1000),
-                    tween: Tween(begin: 0.0, end: 1.0),
-                    curve: Curves.easeIn,
-                    builder: (context, value, child) {
-                      return Opacity(opacity: value, child: child);
-                    },
+                  const SizedBox(height: AppSpacing.xs),
+                  // Tagline with Bubble Style
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(AppRadius.bubble),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
                     child: const Text(
-                      'Belajar Iqra Menjadi Lebih Mudah',
-                      textAlign: TextAlign.center,
+                      'Belajar Iqra Jadi Lebih Seru!',
                       style: TextStyle(
                         fontSize: 18,
-                        color: AppColors.textDim,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.5,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textMain,
                       ),
                     ),
                   ),

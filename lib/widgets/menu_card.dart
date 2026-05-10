@@ -29,34 +29,26 @@ class MenuCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(AppRadius.xl),
+          borderRadius: BorderRadius.circular(AppRadius.bubble),
           boxShadow: [
             BoxShadow(
-              color: AppColors.cardShadow,
-              blurRadius: 30,
-              offset: const Offset(0, 15),
+              color: color.withOpacity(0.2),
+              blurRadius: 25,
+              offset: const Offset(0, 12),
               spreadRadius: -5,
             ),
           ],
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white,
-              AppColors.background.withOpacity(0.3),
-            ],
-          ),
           border: Border.all(
             color: Colors.white,
-            width: 1.5,
+            width: 2,
           ),
         ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(AppRadius.xl),
-            splashColor: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(AppRadius.bubble),
+            splashColor: color.withOpacity(0.2),
             highlightColor: Colors.transparent,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -67,16 +59,17 @@ class MenuCard extends StatelessWidget {
                     color: color.withOpacity(0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: iconWidget ?? Icon(icon, size: 40, color: iconColor ?? color),
+                  child: iconWidget ?? Icon(icon, size: 48, color: iconColor ?? color),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Text(
                   title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
                     color: AppColors.textMain,
+                    height: 1.1,
                   ),
                 ),
                 if (subtitle != null) ...[
@@ -85,9 +78,9 @@ class MenuCard extends StatelessWidget {
                     subtitle!,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       color: AppColors.textDim,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],

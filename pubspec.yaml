@@ -66,6 +66,9 @@ flutter:
     - assets/audio/angka/
     - assets/audio/sapaan/
     - assets/images/
+    - assets/images/mascot_muslim_boy.png
+    - assets/images/mascot_muslim_girl.png
+    - assets/images/cute_decorations.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

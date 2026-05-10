@@ -42,70 +42,80 @@ class BelajarHurufScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: const CustomAppBar(
         title: 'Belajar Huruf',
-        subtitle: 'Kenali Huruf Hijaiyah',
+        subtitle: 'Main Tebak Huruf Yuk!',
       ),
-      body: TweenAnimationBuilder<double>(
-        duration: const Duration(milliseconds: 600),
-        tween: Tween(begin: 0.0, end: 1.0),
-        curve: Curves.easeOutCubic,
-        builder: (context, value, child) {
-          return Opacity(
-            opacity: value,
-            child: Transform.translate(
-              offset: Offset(0, 30 * (1 - value)),
-              child: child,
-            ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: GridView.builder(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: AppSpacing.xl),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: AppSpacing.lg,
-              mainAxisSpacing: AppSpacing.lg,
-              childAspectRatio: 0.9,
-            ),
-            itemCount: _hurufList.length,
-            itemBuilder: (context, index) {
-              final huruf = _hurufList[index];
-              return MenuCard(
-                title: huruf['name'],
-                iconWidget: Hero(
-                  tag: 'letter-${huruf['char']}',
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      huruf['char'],
-                      style: TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: huruf['color'],
+      body: Stack(
+        children: [
+          const FloatingStars(),
+          TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 600),
+            tween: Tween(begin: 0.0, end: 1.0),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return Opacity(
+                opacity: value,
+                child: Transform.translate(
+                  offset: Offset(0, 30 * (1 - value)),
+                  child: child,
+                ),
+              );
+            },
+            child: GridView.builder(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: AppSpacing.lg,
+                mainAxisSpacing: AppSpacing.lg,
+                childAspectRatio: 0.85,
+              ),
+              itemCount: _hurufList.length,
+              itemBuilder: (context, index) {
+                final huruf = _hurufList[index];
+                return MenuCard(
+                  title: huruf['name'],
+                  iconWidget: Hero(
+                    tag: 'letter-${huruf['char']}',
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        huruf['char'],
+                        style: TextStyle(
+                          fontSize: 64,
+                          fontWeight: FontWeight.w900,
+                          color: huruf['color'],
+                          shadows: [
+                            Shadow(
+                              color: huruf['color'].withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                color: huruf['color'],
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DetailHurufScreen(
-                        char: huruf['char'],
-                        name: huruf['name'],
-                        color: huruf['color'],
+                  color: huruf['color'],
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailHurufScreen(
+                          char: huruf['char'],
+                          name: huruf['name'],
+                          color: huruf['color'],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
+                    );
+                  },
+                );
+              },
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
