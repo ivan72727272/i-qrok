@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
 import '../widgets/menu_card.dart';
 import '../widgets/islamic_decor.dart';
@@ -9,29 +8,15 @@ import 'belajar_iqra_screen.dart';
 import 'latihan_screen.dart';
 import 'tentang_screen.dart';
 import 'progress_screen.dart';
-import 'iqra_reader_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   Future<void> _startLearning(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    int highestLevel = 1;
-    
-    // Find the highest level that has been opened/bookmarked
-    for (int i = 6; i >= 1; i--) {
-      if (prefs.getInt('iqra_bookmark_$i') != null) {
-        highestLevel = i;
-        break;
-      }
-    }
-    
-    final levelData = IqraData.levels.firstWhere((l) => l.level == highestLevel);
-    
     if (context.mounted) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => IqraReaderScreen(level: levelData)),
+        MaterialPageRoute(builder: (context) => const BelajarIqraScreen()),
       );
     }
   }

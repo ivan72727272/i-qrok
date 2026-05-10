@@ -4,7 +4,7 @@ import '../constants/app_constants.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/islamic_decor.dart';
 import '../data/iqra_data.dart';
-import 'iqra_reader_screen.dart';
+import 'interactive_iqra_screen.dart';
 
 class ProgressScreen extends StatefulWidget {
   const ProgressScreen({super.key});
@@ -14,15 +14,8 @@ class ProgressScreen extends StatefulWidget {
 }
 
 class _ProgressScreenState extends State<ProgressScreen> {
-  final Map<int, int> _bookmarks = {};
-  final Map<int, int> _totalPages = {
-    1: 10,
-    2: 20,
-    3: 25,
-    4: 30,
-    5: 35,
-    6: 40,
-  };
+  final Map<int, int> _clickedCounts = {};
+  final Map<int, int> _totalCounts = {};
   bool _isLoading = true;
 
   @override
@@ -33,9 +26,28 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   Future<void> _loadProgress() async {
     final prefs = await SharedPreferences.getInstance();
-    for (int i = 1; i <= 6; i++) {
-      _bookmarks[i] = prefs.getInt('iqra_bookmark_$i') ?? 0;
+    
+    // Iqra 1
+    int iqra1Count = 0;
+    for (var letter in IqraData.hijaiyahDasar) {
+      if (prefs.getBool('iqra1_clicked_${letter.char}') ?? false) iqra1Count++;
     }
+    _clickedCounts[1] = iqra1Count;
+    _totalCounts[1] = IqraData.hijaiyahDasar.length;
+
+    // Iqra 2
+    int iqra2Count = 0;
+    final allHarakat = [
+      ...IqraData.getHarakatList('fathah'),
+      ...IqraData.getHarakatList('kasrah'),
+      ...IqraData.getHarakatList('dhammah'),
+    ];
+    for (var letter in allHarakat) {
+      if (prefs.getBool('iqra2_clicked_${letter.char}') ?? false) iqra2Count++;
+    }
+    _clickedCounts[2] = iqra2Count;
+    _totalCounts[2] = allHarakat.length;
+
     setState(() {
       _isLoading = false;
     });
@@ -60,15 +72,15 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   itemCount: IqraData.levels.length,
                   itemBuilder: (context, index) {
                     final level = IqraData.levels[index];
-                    final currentPage = _bookmarks[level.level] ?? 0;
-                    final total = _totalPages[level.level] ?? 10;
-                    final progress = (currentPage) / total;
-                    final isCompleted = currentPage >= total - 1 && currentPage > 0;
+                    final current = _clickedCounts[level.level] ?? 0;
+                    final total = _totalCounts[level.level] ?? 1;
+                    final progress = current / total;
+                    final isCompleted = current == total;
 
                     return _buildProgressCard(
                       context,
                       level: level,
-                      currentPage: currentPage,
+                      current: current,
                       total: total,
                       progress: progress,
                       isCompleted: isCompleted,
@@ -82,8 +94,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   Widget _buildProgressCard(
     BuildContext context, {
-    required dynamic level,
-    required int currentPage,
+    required IqraLevel level,
+    required int current,
     required int total,
     required double progress,
     required bool isCompleted,
@@ -109,7 +121,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           onTap: () {
              Navigator.push(
                context,
-               MaterialPageRoute(builder: (context) => IqraReaderScreen(level: level)),
+               MaterialPageRoute(builder: (context) => InteractiveIqraScreen(level: level)),
              ).then((_) => _loadProgress());
           },
           child: Padding(
@@ -156,7 +168,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Halaman ${(currentPage + 1).clamp(1, total)} dari $total',
+                        '$current dari $total Huruf Dipelajari',
                         style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textDim,

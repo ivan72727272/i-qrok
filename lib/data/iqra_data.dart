@@ -1,58 +1,110 @@
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import '../models/iqra_model.dart';
+import 'package:flutter/material.dart';
+
+class InteractiveLetter {
+  final String char;
+  final String name;
+  final String audioPath;
+
+  const InteractiveLetter({
+    required this.char,
+    required this.name,
+    required this.audioPath,
+  });
+}
+
+class IqraLevel {
+  final int level;
+  final String title;
+  final String description;
+  final Color color;
+
+  const IqraLevel({
+    required this.level,
+    required this.title,
+    required this.description,
+    required this.color,
+  });
+}
 
 class IqraData {
   static final List<IqraLevel> levels = [
-    IqraLevel(
+    const IqraLevel(
       level: 1,
       title: 'Iqra 1',
-      description: 'Pengenalan huruf Hijaiyah berharakat Fathah.',
-      color: const Color(0xFFEF5350),
+      description: 'Mengenal huruf Hijaiyah dasar.',
+      color: Color(0xFFEF5350),
     ),
-    IqraLevel(
+    const IqraLevel(
       level: 2,
       title: 'Iqra 2',
-      description: 'Huruf sambung dan Mad (bacaan panjang).',
-      color: const Color(0xFFFFA726),
-    ),
-    IqraLevel(
-      level: 3,
-      title: 'Iqra 3',
-      description: 'Pengenalan harakat Kasrah dan Dhammah.',
-      color: const Color(0xFFFBC02D),
-    ),
-    IqraLevel(
-      level: 4,
-      title: 'Iqra 4',
-      description: 'Tanwin dan huruf mati (Sukun).',
-      color: const Color(0xFF66BB6A),
-    ),
-    IqraLevel(
-      level: 5,
-      title: 'Iqra 5',
-      description: 'Bacaan Al (Alif Lam) dan Tasydid.',
-      color: const Color(0xFF42A5F5),
-    ),
-    IqraLevel(
-      level: 6,
-      title: 'Iqra 6',
-      description: 'Hukum Tajwid dasar dan Waqaf.',
-      color: const Color(0xFFAB47BC),
+      description: 'Mengenal huruf dengan Harakat.',
+      color: Color(0xFFFFA726),
     ),
   ];
 
-  static Future<void> loadLevelPages(IqraLevel level) async {
-    try {
-      final String jsonString = await rootBundle.loadString('assets/data/iqra/iqra${level.level}.json');
-      final Map<String, dynamic> data = jsonDecode(jsonString);
-      final List<dynamic> pagesJson = data['pages'];
-      level.pages = pagesJson.map((page) => IqraPage.fromJson(page)).toList();
-    } catch (e) {
-      debugPrint('Error loading Iqra data for level ${level.level}: $e');
-      level.pages = [];
-    }
+  static const List<InteractiveLetter> hijaiyahDasar = [
+    InteractiveLetter(char: 'أ', name: 'Alif', audioPath: 'audio/huruf/alif.mp3'),
+    InteractiveLetter(char: 'ب', name: 'Ba', audioPath: 'audio/huruf/ba.mp3'),
+    InteractiveLetter(char: 'ت', name: 'Ta', audioPath: 'audio/huruf/ta.mp3'),
+    InteractiveLetter(char: 'ث', name: 'Tha', audioPath: 'audio/huruf/tha.mp3'),
+    InteractiveLetter(char: 'ج', name: 'Jim', audioPath: 'audio/huruf/jim.mp3'),
+    InteractiveLetter(char: 'ح', name: 'Ha', audioPath: 'audio/huruf/hha.mp3'),
+    InteractiveLetter(char: 'خ', name: 'Kha', audioPath: 'audio/huruf/kha.mp3'),
+    InteractiveLetter(char: 'د', name: 'Dal', audioPath: 'audio/huruf/dal.mp3'),
+    InteractiveLetter(char: 'ذ', name: 'Dhal', audioPath: 'audio/huruf/dhal.mp3'),
+    InteractiveLetter(char: 'ر', name: 'Ra', audioPath: 'audio/huruf/ra.mp3'),
+    InteractiveLetter(char: 'ز', name: 'Zay', audioPath: 'audio/huruf/zay.mp3'),
+    InteractiveLetter(char: 'س', name: 'Sin', audioPath: 'audio/huruf/sin.mp3'),
+    InteractiveLetter(char: 'ش', name: 'Shin', audioPath: 'audio/huruf/shin.mp3'),
+    InteractiveLetter(char: 'ص', name: 'Sad', audioPath: 'audio/huruf/sad.mp3'),
+    InteractiveLetter(char: 'ض', name: 'Dad', audioPath: 'audio/huruf/dad.mp3'),
+    InteractiveLetter(char: 'ط', name: 'Tha', audioPath: 'audio/huruf/tta.mp3'),
+    InteractiveLetter(char: 'ظ', name: 'Zha', audioPath: 'audio/huruf/za.mp3'),
+    InteractiveLetter(char: 'ع', name: 'Ain', audioPath: 'audio/huruf/ain.mp3'),
+    InteractiveLetter(char: 'غ', name: 'Ghain', audioPath: 'audio/huruf/ghain.mp3'),
+    InteractiveLetter(char: 'ف', name: 'Fa', audioPath: 'audio/huruf/fa.mp3'),
+    InteractiveLetter(char: 'ق', name: 'Qaf', audioPath: 'audio/huruf/qaf.mp3'),
+    InteractiveLetter(char: 'ك', name: 'Kaf', audioPath: 'audio/huruf/kaf.mp3'),
+    InteractiveLetter(char: 'ل', name: 'Lam', audioPath: 'audio/huruf/lam.mp3'),
+    InteractiveLetter(char: 'م', name: 'Mim', audioPath: 'audio/huruf/mim.mp3'),
+    InteractiveLetter(char: 'ن', name: 'Nun', audioPath: 'audio/huruf/nun.mp3'),
+    InteractiveLetter(char: 'و', name: 'Waw', audioPath: 'audio/huruf/waw.mp3'),
+    InteractiveLetter(char: 'هـ', name: 'Ha', audioPath: 'audio/huruf/ha.mp3'),
+    InteractiveLetter(char: 'ء', name: 'Hamzah', audioPath: 'audio/huruf/hamzah.mp3'),
+    InteractiveLetter(char: 'ي', name: 'Ya', audioPath: 'audio/huruf/ya.mp3'),
+  ];
+
+  static List<InteractiveLetter> getHarakatList(String harakatType) {
+    // harakatType: 'fathah', 'kasrah', 'dhammah'
+    return hijaiyahDasar.map((base) {
+      String newChar = base.char;
+      String audioSuffix = '';
+      String nameSuffix = '';
+      
+      switch (harakatType) {
+        case 'fathah':
+          newChar = '$newCharَ'; // Add Fathah
+          audioSuffix = '_fathah';
+          nameSuffix = ' (Fathah)';
+          break;
+        case 'kasrah':
+          newChar = '$newCharِ'; // Add Kasrah
+          audioSuffix = '_kasrah';
+          nameSuffix = ' (Kasrah)';
+          break;
+        case 'dhammah':
+          newChar = '$newCharُ'; // Add Dhammah
+          audioSuffix = '_dhammah';
+          nameSuffix = ' (Dhammah)';
+          break;
+      }
+      
+      return InteractiveLetter(
+        char: newChar,
+        name: '${base.name}$nameSuffix',
+        // Dummy paths since we don't have these files yet
+        audioPath: 'audio/harakat/${base.audioPath.split('/').last.replaceAll('.mp3', '')}$audioSuffix.mp3',
+      );
+    }).toList();
   }
 }
-
