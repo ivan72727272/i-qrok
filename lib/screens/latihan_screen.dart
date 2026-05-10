@@ -354,6 +354,27 @@ class _LatihanScreenState extends State<LatihanScreen> with SingleTickerProvider
                     if (_hasAnswered)
                       Column(
                         children: [
+                          TweenAnimationBuilder<double>(
+                            duration: const Duration(milliseconds: 400),
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            curve: Curves.elasticOut,
+                            builder: (context, value, child) {
+                              return Transform.scale(scale: value, child: child);
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                              padding: const EdgeInsets.all(AppSpacing.md),
+                              decoration: BoxDecoration(
+                                color: _isCorrect ? AppColors.success.withOpacity(0.1) : AppColors.error.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                _isCorrect ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                                color: _isCorrect ? AppColors.success : AppColors.error,
+                                size: 64,
+                              ),
+                            ),
+                          ),
                           Text(
                             _isCorrect ? 'Hebat! Kamu Benar 🎉' : 'Ups, coba lagi ya! 😊',
                             style: TextStyle(
