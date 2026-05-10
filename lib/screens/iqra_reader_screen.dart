@@ -76,17 +76,29 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
     await prefs.setInt(bookmarkKey, index);
   }
 
+  String _getAudioPath() {
+    if (widget.level.pages.isEmpty) return '';
+    final page = widget.level.pages[_currentPage];
+    // Auto mapping pattern: iqra[level]_page[number].mp3
+    // We prioritize the path from JSON, but fallback to auto-generated path
+    return page.audioPath.isNotEmpty 
+        ? page.audioPath 
+        : 'iqra${widget.level.level}_page${_currentPage + 1}.mp3';
+  }
+
   Future<void> _checkAudioAvailability() async {
     if (widget.level.pages.isEmpty) return;
     
-    final page = widget.level.pages[_currentPage];
-    final path = 'assets/audio/iqra/${page.audioPath}';
+    final fileName = _getAudioPath();
+    final fullAssetPath = 'assets/audio/iqra/$fileName';
     
     bool available = false;
     try {
-      await rootBundle.load(path);
+      // Check if asset exists in bundle
+      await rootBundle.load(fullAssetPath);
       available = true;
     } catch (e) {
+      debugPrint('⚠️ Audio Missing: $fullAssetPath not found in assets.');
       available = false;
     }
     
@@ -110,11 +122,12 @@ class _IqraReaderScreenState extends State<IqraReaderScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final page = widget.level.pages[_currentPage];
+      final fileName = _getAudioPath();
       await _audioPlayer.stop();
-      await _audioPlayer.play(AssetSource('audio/iqra/${page.audioPath}'));
+      await _audioPlayer.play(AssetSource('audio/iqra/$fileName'));
     } catch (e) {
-      debugPrint('Audio Iqra tidak ditemukan: $e');
+      debugPrint('❌ Error Playing Audio: $e');
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
