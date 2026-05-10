@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../constants/app_constants.dart';
 import '../widgets/islamic_decor.dart';
 import 'home_screen.dart';
