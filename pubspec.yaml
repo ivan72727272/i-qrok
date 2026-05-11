@@ -62,7 +62,11 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/audio/
+    - assets/audio/surah/
     - assets/audio/huruf/
+    - assets/audio/fathah/
+    - assets/audio/kasrah/
+    - assets/audio/dhammah/
     - assets/audio/iqra/
     - assets/audio/angka/
     - assets/audio/sapaan/

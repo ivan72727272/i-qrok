@@ -44,14 +44,24 @@ class _InteractiveIqraScreenState extends State<InteractiveIqraScreen> {
       await rootBundle.load('assets/${letter.audioPath}');
       await _audioPlayer.play(AssetSource(letter.audioPath)).timeout(const Duration(seconds: 3));
     } catch (e) {
+      debugPrint('Audio Error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Audio untuk huruf ${letter.name} belum tersedia 😊', textAlign: TextAlign.center),
-            backgroundColor: AppColors.error,
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.volume_off_rounded, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                const Text('Audio belum tersedia', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+              ],
+            ),
+            backgroundColor: AppColors.textDim.withOpacity(0.8),
             duration: const Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            margin: const EdgeInsets.only(bottom: 24, left: 40, right: 40),
+            elevation: 0,
           ),
         );
       }
@@ -134,7 +144,8 @@ class _InteractiveIqraScreenState extends State<InteractiveIqraScreen> {
 
         return TweenAnimationBuilder<double>(
           duration: const Duration(milliseconds: 300),
-          tween: Tween(begin: 1.0, end: isPlaying ? 0.9 : 1.0),
+          curve: Curves.easeOutBack,
+          tween: Tween(begin: 1.0, end: isPlaying ? 1.05 : 1.0),
           builder: (context, scale, child) {
             return Transform.scale(
               scale: scale,
@@ -144,18 +155,18 @@ class _InteractiveIqraScreenState extends State<InteractiveIqraScreen> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             decoration: BoxDecoration(
-              color: isPlaying ? widget.level.color.withOpacity(0.2) : Colors.white,
+              color: isPlaying ? const Color(0xFFE8F5E9) : Colors.white,
               borderRadius: BorderRadius.circular(AppRadius.lg),
               boxShadow: [
                 BoxShadow(
-                  color: isPlaying ? widget.level.color.withOpacity(0.4) : widget.level.color.withOpacity(0.15),
-                  blurRadius: isPlaying ? 15 : 10,
+                  color: isPlaying ? const Color(0xFF81C784).withOpacity(0.4) : widget.level.color.withOpacity(0.1),
+                  blurRadius: isPlaying ? 15 : 8,
                   spreadRadius: isPlaying ? 2 : 0,
                   offset: const Offset(0, 4),
                 ),
               ],
               border: Border.all(
-                color: isPlaying ? widget.level.color : Colors.white,
+                color: isPlaying ? const Color(0xFFA5D6A7) : Colors.transparent,
                 width: 2,
               ),
             ),
@@ -163,41 +174,70 @@ class _InteractiveIqraScreenState extends State<InteractiveIqraScreen> {
               color: Colors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.lg),
-                splashColor: widget.level.color.withOpacity(0.3),
+                splashColor: const Color(0xFF81C784).withOpacity(0.3),
+                highlightColor: const Color(0xFF81C784).withOpacity(0.1),
                 onTap: () => _playSound(letter),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Stack(
+                  alignment: Alignment.center,
                   children: [
-                    Text(
-                      letter.char,
-                      style: TextStyle(
-                        fontSize: 42,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Amiri',
-                        color: AppColors.textMain,
-                        height: 1.2,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: widget.level.color.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(AppRadius.bubble),
-                      ),
-                      child: Text(
-                        letter.name,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: widget.level.color,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          letter.char,
+                          style: TextStyle(
+                            fontSize: 42,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Amiri',
+                            color: isPlaying ? const Color(0xFF2E7D32) : AppColors.textMain,
+                            height: 1.2,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: isPlaying ? const Color(0xFFC8E6C9) : widget.level.color.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(AppRadius.bubble),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isPlaying ? Icons.volume_up_rounded : Icons.volume_down_rounded,
+                                size: 14,
+                                color: isPlaying ? const Color(0xFF2E7D32) : widget.level.color,
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  letter.name,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: isPlaying ? const Color(0xFF2E7D32) : widget.level.color,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
+                    if (isPlaying)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Icon(
+                          Icons.graphic_eq_rounded,
+                          size: 16,
+                          color: const Color(0xFF4CAF50).withOpacity(0.7),
+                        ),
+                      ),
                   ],
                 ),
               ),

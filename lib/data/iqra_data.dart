@@ -99,11 +99,11 @@ class IqraData {
           break;
       }
       
+      final baseFileName = base.audioPath.split('/').last.replaceAll('.mp3', '');
       return InteractiveLetter(
         char: newChar,
         name: '${base.name}$nameSuffix',
-        // Dummy paths since we don't have these files yet
-        audioPath: 'audio/harakat/${base.audioPath.split('/').last.replaceAll('.mp3', '')}$audioSuffix.mp3',
+        audioPath: 'audio/$harakatType/${baseFileName}$audioSuffix.mp3',
       );
     }).toList();
   }

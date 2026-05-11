@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/islamic_decor.dart';
+import '../data/juz_amma_data.dart';
 
 class MenuSurahScreen extends StatefulWidget {
   const MenuSurahScreen({super.key});
@@ -15,97 +17,33 @@ class MenuSurahScreen extends StatefulWidget {
 class _MenuSurahScreenState extends State<MenuSurahScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   String? _playingSurah;
+  Set<String> _favorites = {};
 
-  static const List<Map<String, dynamic>> _surahs = [
-    {
-      'name': 'Al-Fatihah',
-      'arabic': 'الفاتحة',
-      'number': 1,
-      'ayat': 7,
-      'color': Color(0xFF66BB6A),
-      'audio': 'audio/surah/al_fatihah.mp3',
-      'verses': [
-        {'arabic': 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', 'latin': 'Bismillāhir-raḥmānir-raḥīm', 'arti': 'Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.'},
-        {'arabic': 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ', 'latin': 'Al-ḥamdu lillāhi rabbil-\'ālamīn', 'arti': 'Segala puji bagi Allah, Tuhan seluruh alam.'},
-        {'arabic': 'الرَّحْمَٰنِ الرَّحِيمِ', 'latin': 'Ar-raḥmānir-raḥīm', 'arti': 'Yang Maha Pengasih, Maha Penyayang.'},
-        {'arabic': 'مَالِكِ يَوْمِ الدِّينِ', 'latin': 'Māliki yawmid-dīn', 'arti': 'Pemilik hari pembalasan.'},
-        {'arabic': 'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ', 'latin': 'Iyyāka na\'budu wa iyyāka nasta\'īn', 'arti': 'Hanya kepada Engkaulah kami menyembah dan hanya kepada Engkaulah kami mohon pertolongan.'},
-        {'arabic': 'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ', 'latin': 'Ihdinaṣ-ṣirāṭal-mustaqīm', 'arti': 'Tunjukilah kami jalan yang lurus.'},
-        {'arabic': 'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ', 'latin': 'Ṣirāṭal-lażīna an\'amta \'alaihim gairil-magḍūbi \'alaihim wa laḍ-ḍāllīn', 'arti': '(yaitu) jalan orang-orang yang telah Engkau beri nikmat kepadanya; bukan (jalan) mereka yang dimurkai dan bukan (pula jalan) mereka yang sesat.'},
-      ],
-    },
-    {
-      'name': 'Al-Ikhlas',
-      'arabic': 'الإخلاص',
-      'number': 112,
-      'ayat': 4,
-      'color': Color(0xFF42A5F5),
-      'audio': 'audio/surah/al_ikhlas.mp3',
-      'verses': [
-        {'arabic': 'قُلْ هُوَ اللَّهُ أَحَدٌ', 'latin': 'Qul huwallāhu aḥad', 'arti': 'Katakanlah (Muhammad), "Dialah Allah, Yang Maha Esa.'},
-        {'arabic': 'اللَّهُ الصَّمَدُ', 'latin': 'Allāhuṣ-ṣamad', 'arti': 'Allah tempat meminta segala sesuatu.'},
-        {'arabic': 'لَمْ يَلِدْ وَلَمْ يُولَدْ', 'latin': 'Lam yalid wa lam yūlad', 'arti': '(Allah) tidak beranak dan tidak pula diperanakkan.'},
-        {'arabic': 'وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌ', 'latin': 'Wa lam yakul lahū kufuwan aḥad', 'arti': 'Dan tidak ada sesuatu yang setara dengan Dia."'},
-      ],
-    },
-    {
-      'name': 'Al-Falaq',
-      'arabic': 'الفلق',
-      'number': 113,
-      'ayat': 5,
-      'color': Color(0xFFFFA726),
-      'audio': 'audio/surah/al_falaq.mp3',
-      'verses': [
-        {'arabic': 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ', 'latin': 'Qul a\'ūżu birabbil-falaq', 'arti': 'Katakanlah, "Aku berlindung kepada Tuhan yang menguasai subuh (fajar),'},
-        {'arabic': 'مِن شَرِّ مَا خَلَقَ', 'latin': 'Min syarri mā khalaq', 'arti': 'dari kejahatan (makhluk yang) Dia ciptakan,'},
-        {'arabic': 'وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ', 'latin': 'Wa min syarri gāsiqin iżā waqab', 'arti': 'dan dari kejahatan malam apabila telah gelap gulita,'},
-        {'arabic': 'وَمِن شَرِّ النَّفَّاثَاتِ فِى الْعُقَدِ', 'latin': 'Wa min syarrin-naffāṡāti fil-\'uqad', 'arti': 'dan dari kejahatan (perempuan-perempuan) penyihir yang meniup pada buhul-buhul (talinya),'},
-        {'arabic': 'وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ', 'latin': 'Wa min syarri ḥāsidin iżā ḥasad', 'arti': 'dan dari kejahatan orang yang dengki apabila dia dengki."'},
-      ],
-    },
-    {
-      'name': 'An-Nas',
-      'arabic': 'الناس',
-      'number': 114,
-      'ayat': 6,
-      'color': Color(0xFFAB47BC),
-      'audio': 'audio/surah/an_nas.mp3',
-      'verses': [
-        {'arabic': 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ', 'latin': 'Qul a\'ūżu birabbin-nās', 'arti': 'Katakanlah, "Aku berlindung kepada Tuhannya manusia,'},
-        {'arabic': 'مَلِكِ النَّاسِ', 'latin': 'Malikin-nās', 'arti': 'Raja manusia,'},
-        {'arabic': 'إِلَٰهِ النَّاسِ', 'latin': 'Ilāhin-nās', 'arti': 'Sembahan manusia,'},
-        {'arabic': 'مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ', 'latin': 'Min syarril-waswāsil-khannās', 'arti': 'dari kejahatan (bisikan) setan yang bersembunyi,'},
-        {'arabic': 'الَّذِى يُوَسْوِسُ فِى صُدُورِ النَّاسِ', 'latin': 'Allażī yuwaswisu fī ṣudūrin-nās', 'arti': 'yang membisikkan (kejahatan) ke dalam dada manusia,'},
-        {'arabic': 'مِنَ الْجِنَّةِ وَالنَّاسِ', 'latin': 'Minal-jinnati wan-nās', 'arti': 'dari (golongan) jin dan manusia."'},
-      ],
-    },
-    {
-      'name': 'Al-Kawthar',
-      'arabic': 'الكوثر',
-      'number': 108,
-      'ayat': 3,
-      'color': Color(0xFF26C6DA),
-      'audio': 'audio/surah/al_kautsar.mp3',
-      'verses': [
-        {'arabic': 'إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ', 'latin': 'Innā a\'ṭainākal-kawṡar', 'arti': 'Sungguh, Kami telah memberimu (Muhammad) nikmat yang banyak.'},
-        {'arabic': 'فَصَلِّ لِرَبِّكَ وَانْحَرْ', 'latin': 'Faṣalli lirabbika wanḥar', 'arti': 'Maka laksanakanlah shalat karena Tuhanmu, dan berkurbanlah (sebagai ibadah dan mendekatkan diri kepada Allah).'},
-        {'arabic': 'إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ', 'latin': 'Inna syāni\'aka huwal-abtar', 'arti': 'Sungguh, orang-orang yang membencimu dialah yang terputus (dari rahmat Allah).'},
-      ],
-    },
-    {
-      'name': 'Al-Ashr',
-      'arabic': 'العصر',
-      'number': 103,
-      'ayat': 3,
-      'color': Color(0xFFEF5350),
-      'audio': 'audio/surah/al_asr.mp3',
-      'verses': [
-        {'arabic': 'وَالْعَصْرِ', 'latin': 'Wal-\'aṣr', 'arti': 'Demi masa.'},
-        {'arabic': 'إِنَّ الْإِنسَانَ لَفِى خُسْرٍ', 'latin': 'Innal-insāna lafī khusr', 'arti': 'Sungguh, manusia berada dalam kerugian,'},
-        {'arabic': 'إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ', 'latin': 'Illal-lażīna āmanū wa \'amiluṣ-ṣāliḥāti wa tawāṣaw bil-ḥaqqi wa tawāṣaw biṣ-ṣabr', 'arti': 'kecuali orang-orang yang beriman dan mengerjakan kebajikan serta saling menasihati untuk kebenaran dan saling menasihati untuk kesabaran.'},
-      ],
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final favList = prefs.getStringList('juz_amma_favorites') ?? [];
+    setState(() {
+      _favorites = favList.toSet();
+    });
+  }
+
+  Future<void> _toggleFavorite(String surahName) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (_favorites.contains(surahName)) {
+        _favorites.remove(surahName);
+      } else {
+        _favorites.add(surahName);
+      }
+    });
+    await prefs.setStringList('juz_amma_favorites', _favorites.toList());
+  }
 
   @override
   void dispose() {
@@ -119,22 +57,40 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
       setState(() => _playingSurah = null);
       return;
     }
+    
+    // Stop any currently playing audio
+    if (_playingSurah != null) {
+      await _audioPlayer.stop();
+    }
+    
     setState(() => _playingSurah = surahName);
     try {
       await rootBundle.load('assets/$audioPath');
       await _audioPlayer.play(AssetSource(audioPath));
       _audioPlayer.onPlayerComplete.listen((_) {
-        if (mounted) setState(() => _playingSurah = null);
+        if (mounted && _playingSurah == surahName) {
+          setState(() => _playingSurah = null);
+        }
       });
     } catch (_) {
       if (mounted) {
         setState(() => _playingSurah = null);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Audio belum tersedia 😊', textAlign: TextAlign.center),
-            backgroundColor: AppColors.warning,
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.volume_off_rounded, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                const Text('Audio belum tersedia', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+              ],
+            ),
+            backgroundColor: AppColors.textDim.withOpacity(0.8),
+            duration: const Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            margin: const EdgeInsets.only(bottom: 24, left: 40, right: 40),
+            elevation: 0,
           ),
         );
       }
@@ -146,8 +102,8 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const CustomAppBar(
-        title: 'Surah Pendek',
-        subtitle: 'Hafalan surah pilihan',
+        title: 'Juz Amma',
+        subtitle: 'Kumpulan surah pilihan untuk belajar dan hafalan anak.',
       ),
       body: Stack(
         children: [
@@ -155,8 +111,8 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
           ListView.builder(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.all(AppSpacing.lg),
-            itemCount: _surahs.length,
-            itemBuilder: (context, index) => _buildSurahCard(_surahs[index]),
+            itemCount: JuzAmmaData.surahs.length,
+            itemBuilder: (context, index) => _buildSurahCard(JuzAmmaData.surahs[index]),
           ),
         ],
       ),
@@ -166,18 +122,33 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
   Widget _buildSurahCard(Map<String, dynamic> surah) {
     final color = surah['color'] as Color;
     final isPlaying = _playingSurah == surah['name'];
+    final isFavorite = _favorites.contains(surah['name']);
 
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isPlaying ? color.withOpacity(0.05) : Colors.white,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        boxShadow: [BoxShadow(color: color.withOpacity(0.12), blurRadius: 12, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+            color: isPlaying ? color.withOpacity(0.3) : color.withOpacity(0.12),
+            blurRadius: isPlaying ? 16 : 12,
+            spreadRadius: isPlaying ? 2 : 0,
+            offset: const Offset(0, 4),
+          )
+        ],
+        border: Border.all(
+          color: isPlaying ? color.withOpacity(0.5) : Colors.transparent,
+          width: 2,
+        ),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(AppRadius.xl),
+          splashColor: color.withOpacity(0.2),
+          highlightColor: color.withOpacity(0.1),
           onTap: () => _showSurahDetail(surah),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -185,11 +156,11 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
               children: [
                 // Number badge
                 Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(color: color.withOpacity(0.12), shape: BoxShape.circle),
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(color: color.withOpacity(0.15), shape: BoxShape.circle),
                   child: Center(
-                    child: Text('${surah['number']}', style: TextStyle(fontWeight: FontWeight.w900, color: color, fontSize: 16)),
+                    child: Text('${surah['number']}', style: TextStyle(fontWeight: FontWeight.w900, color: color, fontSize: 18)),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
@@ -201,12 +172,43 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(surah['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: AppColors.textMain)),
-                          Text(surah['arabic'], style: TextStyle(fontSize: 22, color: color, fontWeight: FontWeight.w600)),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    surah['name'],
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.textMain),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                GestureDetector(
+                                  onTap: () => _toggleFavorite(surah['name']),
+                                  child: Icon(
+                                    isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
+                                    color: isFavorite ? const Color(0xFFFFCA28) : AppColors.textDim.withOpacity(0.3),
+                                    size: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(surah['arabic'], style: TextStyle(fontSize: 24, color: color, fontWeight: FontWeight.w600, fontFamily: 'Amiri')),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Text('${surah['ayat']} ayat', style: const TextStyle(fontSize: 13, color: AppColors.textDim)),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Text('${surah['ayat']} ayat', style: const TextStyle(fontSize: 13, color: AppColors.textDim)),
+                          if (isPlaying) ...[
+                            const SizedBox(width: 8),
+                            Icon(Icons.graphic_eq_rounded, size: 14, color: color),
+                            const SizedBox(width: 4),
+                            Text('Memutar...', style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.bold)),
+                          ]
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -216,16 +218,16 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
                   onTap: () => _playAudio(surah['audio'], surah['name']),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    width: 40,
-                    height: 40,
+                    width: 46,
+                    height: 46,
                     decoration: BoxDecoration(
-                      color: isPlaying ? color : color.withOpacity(0.1),
+                      color: isPlaying ? color : color.withOpacity(0.15),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      isPlaying ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                      isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                       color: isPlaying ? Colors.white : color,
-                      size: 22,
+                      size: 28,
                     ),
                   ),
                 ),
@@ -276,7 +278,7 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
                         Text('${surah['ayat']} Ayat', style: const TextStyle(color: AppColors.textDim, fontSize: 14)),
                       ],
                     ),
-                    Text(surah['arabic'], style: TextStyle(fontSize: 32, color: color, fontWeight: FontWeight.w600)),
+                    Text(surah['arabic'], style: TextStyle(fontSize: 32, color: color, fontWeight: FontWeight.w600, fontFamily: 'Amiri')),
                   ],
                 ),
               ),
@@ -285,6 +287,7 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
               Expanded(
                 child: ListView.builder(
                   controller: scrollController,
+                  physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                   itemCount: verses.length,
                   itemBuilder: (_, i) {
@@ -305,7 +308,7 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
                             children: [
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(AppRadius.full)),
+                                decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(AppRadius.full)),
                                 child: Text('${i + 1}', style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 12)),
                               ),
                               Flexible(
@@ -313,14 +316,14 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
                                   verse['arabic'],
                                   textAlign: TextAlign.right,
                                   textDirection: TextDirection.rtl,
-                                  style: TextStyle(fontSize: 22, color: color, fontFamily: 'Amiri', height: 1.8),
+                                  style: TextStyle(fontSize: 26, color: color, fontFamily: 'Amiri', height: 1.8),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(verse['latin'], style: TextStyle(fontSize: 13, color: color, fontStyle: FontStyle.italic)),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 12),
+                          Text(verse['latin'], style: TextStyle(fontSize: 14, color: color, fontStyle: FontStyle.italic)),
+                          const SizedBox(height: 6),
                           Text(verse['arti'], style: const TextStyle(fontSize: 13, color: AppColors.textDim, height: 1.4)),
                         ],
                       ),
