@@ -44,17 +44,17 @@ class MenuCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(AppRadius.bubble),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.2),
-              blurRadius: 25,
-              offset: const Offset(0, 12),
-              spreadRadius: -5,
+              color: color.withOpacity(0.4),
+              blurRadius: 0,
+              offset: const Offset(0, 6),
+              spreadRadius: 0,
             ),
           ],
           border: Border.all(
-            color: Colors.white,
+            color: color.withOpacity(0.1),
             width: 2,
           ),
         ),
@@ -65,7 +65,7 @@ class MenuCard extends StatelessWidget {
               await _playNavSound();
               onTap();
             },
-            borderRadius: BorderRadius.circular(AppRadius.bubble),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
             splashColor: color.withOpacity(0.2),
             highlightColor: Colors.transparent,
             child: Padding(

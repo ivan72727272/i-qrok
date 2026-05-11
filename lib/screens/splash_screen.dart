@@ -97,7 +97,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               left: -50,
               child: Opacity(
                 opacity: 0.1,
-                child: Image.asset('assets/images/cute_decorations.png', width: 300),
+                child: Image.asset('assets/images/cute_decorations.png', width: 300, errorBuilder: (_,__,___)=>const Icon(Icons.cloud_rounded, size: 200, color: Colors.white)),
               ),
             ),
             
@@ -146,8 +146,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Image.asset('assets/images/mascot_muslim_boy.png', width: 110),
-                              Image.asset('assets/images/mascot_muslim_girl.png', width: 110),
+                              Image.asset('assets/images/characters/boy.png', width: 110, errorBuilder: (_,__,___)=>const Icon(Icons.face_retouching_natural, size: 80, color: AppColors.primary)),
+                              Image.asset('assets/images/characters/girl.png', width: 110, errorBuilder: (_,__,___)=>const Icon(Icons.face_4_rounded, size: 80, color: AppColors.softPink)),
                             ],
                           ),
                         ],
@@ -157,9 +157,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   const SizedBox(height: AppSpacing.xl),
                   // App Name
                   const Text(
-                    'MUSLIM KIDS',
+                    'LITTLE MUSLIM',
                     style: TextStyle(
-                      fontSize: 42,
+                      fontSize: 40,
                       fontWeight: FontWeight.w900,
                       color: AppColors.primary,
                       letterSpacing: -1,

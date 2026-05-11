@@ -53,24 +53,32 @@ class FloatingStars extends StatelessWidget {
           top: 20,
           right: 30,
           child: Opacity(
-            opacity: 0.2,
-            child: Icon(Icons.auto_awesome_rounded, size: 24, color: AppColors.accent),
+            opacity: 0.3,
+            child: Icon(Icons.auto_awesome_rounded, size: 24, color: AppColors.sunnyYellow),
           ),
         ),
         Positioned(
           bottom: 50,
           left: 40,
           child: Opacity(
-            opacity: 0.15,
-            child: Icon(Icons.brightness_2_rounded, size: 32, color: AppColors.accent),
+            opacity: 0.3,
+            child: Icon(Icons.brightness_2_rounded, size: 32, color: AppColors.skyBlue),
           ),
         ),
         Positioned(
           top: 150,
-          left: 10,
+          left: 20,
           child: Opacity(
-            opacity: 0.1,
-            child: Icon(Icons.star_rounded, size: 18, color: AppColors.accent),
+            opacity: 0.4,
+            child: Icon(Icons.star_rounded, size: 18, color: AppColors.softPink),
+          ),
+        ),
+        Positioned(
+          bottom: 120,
+          right: 20,
+          child: Opacity(
+            opacity: 0.3,
+            child: Icon(Icons.auto_awesome_rounded, size: 20, color: AppColors.primary),
           ),
         ),
       ],

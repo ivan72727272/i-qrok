@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
 
+import 'package:google_fonts/google_fonts.dart';
+
 class AppTheme {
   static ThemeData get light {
+    final baseTextTheme = GoogleFonts.nunitoTextTheme();
     return ThemeData(
       useMaterial3: true,
       scaffoldBackgroundColor: AppColors.background,
@@ -12,14 +15,14 @@ class AppTheme {
         secondary: AppColors.accent,
         background: AppColors.background,
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.primary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+        titleTextStyle: GoogleFonts.nunito(
+          fontSize: 22,
+          fontWeight: FontWeight.w800,
           color: AppColors.primary,
           letterSpacing: 0.5,
         ),
@@ -32,45 +35,48 @@ class AppTheme {
           TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
         },
       ),
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
+      textTheme: baseTextTheme.copyWith(
+        displayLarge: GoogleFonts.nunito(
           fontSize: 40,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w900,
           color: AppColors.primary,
           letterSpacing: -0.5,
         ),
-        displayMedium: TextStyle(
+        displayMedium: GoogleFonts.nunito(
           fontSize: 32,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: AppColors.primary,
         ),
-        titleLarge: TextStyle(
+        titleLarge: GoogleFonts.nunito(
           fontSize: 22,
           fontWeight: FontWeight.bold,
           color: AppColors.textMain,
         ),
-        bodyLarge: TextStyle(
+        bodyLarge: GoogleFonts.nunito(
           fontSize: 16,
           color: AppColors.textMain,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
         ),
-        bodyMedium: TextStyle(
+        bodyMedium: GoogleFonts.nunito(
           fontSize: 14,
           color: AppColors.textDim,
+          fontWeight: FontWeight.w500,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          elevation: 4,
+          shadowColor: AppColors.primary.withOpacity(0.5),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderRadius: BorderRadius.circular(AppRadius.bubble),
           ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          textStyle: GoogleFonts.nunito(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.5,
           ),
         ),
       ),

@@ -13,7 +13,7 @@ class ECroApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'E-Cro',
+      title: 'Little Muslim',
       theme: AppTheme.light,
       home: const SplashScreen(),
     );
