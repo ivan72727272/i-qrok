@@ -239,6 +239,7 @@ class _BrochureCard extends StatelessWidget {
                   child: Image.asset(
                     assetPath,
                     fit: BoxFit.cover,
+                    cacheWidth: 300,
                     errorBuilder: (_, __, ___) => Container(
                       color: color.withValues(alpha: 0.1),
                       child: Center(
