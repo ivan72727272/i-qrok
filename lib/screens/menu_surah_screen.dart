@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
 import '../widgets/islamic_decor.dart';
@@ -57,14 +58,12 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
       return;
     }
     
-    // Stop any currently playing audio
     if (_playingSurah != null) {
       await _audioPlayer.stop();
     }
     
     setState(() => _playingSurah = surahName);
     try {
-      await rootBundle.load('assets/$audioPath');
       await _audioPlayer.play(AssetSource(audioPath));
       _audioPlayer.onPlayerComplete.listen((_) {
         if (mounted && _playingSurah == surahName) {
@@ -76,20 +75,9 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
         setState(() => _playingSurah = null);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.volume_off_rounded, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                const Text('Audio belum tersedia', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-              ],
-            ),
-            backgroundColor: AppColors.textDim.withOpacity(0.8),
-            duration: const Duration(seconds: 2),
+            content: const Text('Audio belum tersedia 🕌'),
+            backgroundColor: AppColors.primary,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            margin: const EdgeInsets.only(bottom: 24, left: 40, right: 40),
-            elevation: 0,
           ),
         );
       }
@@ -99,24 +87,17 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFFBFDFF),
       body: Stack(
         children: [
-          // Background blobs
-          Positioned(top: -50, right: -50,
-            child: Container(width: 200, height: 200,
-              decoration: BoxDecoration(color: AppColors.sunnyYellow.withOpacity(0.07), shape: BoxShape.circle))),
-          Positioned(bottom: 100, left: -60,
-            child: Container(width: 180, height: 180,
-              decoration: BoxDecoration(color: AppColors.skyBlue.withOpacity(0.06), shape: BoxShape.circle))),
-          const FloatingStars(),
+          _buildBackgroundDecor(),
           Column(
             children: [
               _buildHeader(context),
               Expanded(
                 child: ListView.builder(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 32),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
                   itemCount: JuzAmmaData.surahs.length,
                   itemBuilder: (context, index) => _buildSurahCard(JuzAmmaData.surahs[index]),
                 ),
@@ -128,62 +109,60 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
     );
   }
 
+  Widget _buildBackgroundDecor() {
+    return Stack(
+      children: [
+        Positioned(top: -50, right: -50,
+          child: Container(width: 250, height: 250,
+            decoration: BoxDecoration(color: const Color(0xFFFFD93D).withOpacity(0.05), shape: BoxShape.circle))),
+        Positioned(bottom: 100, left: -60,
+          child: Container(width: 200, height: 200,
+            decoration: BoxDecoration(color: const Color(0xFF4D96FF).withOpacity(0.04), shape: BoxShape.circle))),
+        const FloatingStars(),
+      ],
+    );
+  }
+
   Widget _buildHeader(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFFD93D), Color(0xFFC77DFF)],
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft, end: Alignment.bottomRight,
+          colors: [Color(0xFF6BCB77), Color(0xFF4D96FF)],
         ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(AppRadius.xl),
-          bottomRight: Radius.circular(AppRadius.xl),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(36),
+          bottomRight: Radius.circular(36),
         ),
-        boxShadow: [BoxShadow(color: Color(0x44FFD93D), blurRadius: 20, offset: Offset(0, 8))],
+        boxShadow: [
+          BoxShadow(color: const Color(0xFF4D96FF).withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 8)),
+        ],
       ),
       child: SafeArea(
         bottom: false,
-        child: Stack(
-          children: [
-            Positioned(top: -10, right: -10,
-              child: Container(width: 80, height: 80,
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), shape: BoxShape.circle))),
-            const Positioned(top: 10, right: 22, child: FloatingStarSingle(size: 16, color: Colors.white)),
-            const Positioned(top: 34, right: 50, child: FloatingStarSingle(size: 11, color: Colors.white)),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.sm, AppSpacing.lg, AppSpacing.lg),
-              child: Row(
-                children: [
-                  Material(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(AppRadius.lg),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                      onTap: () { HapticFeedback.lightImpact(); Navigator.pop(context); },
-                      child: const Padding(padding: EdgeInsets.all(10),
-                        child: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20)),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('🌙  Juz Amma',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white,
-                            shadows: [Shadow(color: Colors.black26, blurRadius: 4)])),
-                        SizedBox(height: 2),
-                        Text('Surah pilihan untuk belajar & hafalan ⭐',
-                          style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
-                      ],
-                    ),
-                  ),
-                ],
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 24, 24),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 24),
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('🌙 Juz Amma',
+                      style: GoogleFonts.nunito(fontSize: 26, fontWeight: FontWeight.w900, color: Colors.white,
+                        shadows: [const Shadow(color: Colors.black12, blurRadius: 4)])),
+                    Text('Mari menghafal Surah-surah pendek ✨',
+                      style: GoogleFonts.nunito(fontSize: 13, color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.w700)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -194,123 +173,84 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
     final isPlaying = _playingSurah == surah['name'];
     final isFavorite = _favorites.contains(surah['name']);
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      margin: const EdgeInsets.only(bottom: 12),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isPlaying ? color.withOpacity(0.06) : Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(
-            color: isPlaying ? color.withOpacity(0.35) : color.withOpacity(0.13),
-            blurRadius: isPlaying ? 20 : 12,
-            spreadRadius: isPlaying ? 2 : 0,
-            offset: const Offset(0, 5),
-          )
+          BoxShadow(color: color.withOpacity(0.1), blurRadius: 15, offset: const Offset(0, 8)),
         ],
-        border: Border.all(
-          color: isPlaying ? color.withOpacity(0.5) : color.withOpacity(0.12),
-          width: isPlaying ? 2 : 1.5,
-        ),
+        border: Border.all(color: color.withOpacity(0.05), width: 1.5),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(AppRadius.xl),
-          splashColor: color.withOpacity(0.2),
-          highlightColor: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(24),
           onTap: () => _showSurahDetail(surah),
           child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Number badge with gradient
+                // Surah Number
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 50, height: 50,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [color.withOpacity(0.2), color.withOpacity(0.4)],
-                    ),
+                    color: color.withOpacity(0.1),
                     shape: BoxShape.circle,
-                    boxShadow: [BoxShadow(color: color.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 3))],
                   ),
                   child: Center(
                     child: Text('${surah['number']}',
-                      style: TextStyle(fontWeight: FontWeight.w900, color: color, fontSize: 18,
-                        shadows: [Shadow(color: color.withOpacity(0.3), blurRadius: 4)])),
+                      style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.w900, color: color)),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.md),
-                // Info
+                const SizedBox(width: 16),
+                // Surah Info
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    surah['name'],
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.textMain),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                GestureDetector(
-                                  onTap: () => _toggleFavorite(surah['name']),
-                                  child: Icon(
-                                    isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
-                                    color: isFavorite ? const Color(0xFFFFCA28) : AppColors.textDim.withOpacity(0.3),
-                                    size: 20,
-                                  ),
-                                ),
-                              ],
+                          Flexible(
+                            child: Text(surah['name'],
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFF2C3E50))),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => _toggleFavorite(surah['name']),
+                            child: Icon(
+                              isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
+                              color: isFavorite ? const Color(0xFFFFCA28) : Colors.grey[300],
+                              size: 18,
                             ),
                           ),
-                          Text(surah['arabic'], style: TextStyle(fontSize: 24, color: color, fontWeight: FontWeight.w600, fontFamily: 'Amiri')),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Text('${surah['ayat']} ayat', style: const TextStyle(fontSize: 13, color: AppColors.textDim)),
-                          if (isPlaying) ...[
-                            const SizedBox(width: 12),
-                            EqualizerAnimation(color: color, size: 14),
-                            const SizedBox(width: 6),
-                            Text('Memutar...', style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w900)),
-                          ]
-                        ],
-                      ),
+                      const SizedBox(height: 4),
+                      Text('${surah['ayat']} Ayat',
+                        style: GoogleFonts.nunito(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.blueGrey[300])),
                     ],
                   ),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                // Play button with glow
+                // Arabic Name
+                Text(surah['arabic'],
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF2C3E50), fontFamily: 'Amiri')),
+                const SizedBox(width: 12),
+                // Play Button
                 GestureDetector(
                   onTap: () => _playAudio(surah['audio'], surah['name']),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 48,
-                    height: 48,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: isPlaying ? color : color.withOpacity(0.15),
+                      color: isPlaying ? color : color.withOpacity(0.1),
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        if (isPlaying) BoxShadow(color: color.withOpacity(0.4), blurRadius: 12, spreadRadius: 2),
-                      ],
                     ),
                     child: Icon(
                       isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                       color: isPlaying ? Colors.white : color,
-                      size: 28,
+                      size: 24,
                     ),
                   ),
                 ),
@@ -331,107 +271,116 @@ class _MenuSurahScreenState extends State<MenuSurahScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.85,
+        initialChildSize: 0.9,
         maxChildSize: 0.95,
-        minChildSize: 0.5,
+        minChildSize: 0.6,
         builder: (_, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-            boxShadow: [BoxShadow(color: color.withOpacity(0.2), blurRadius: 24, offset: const Offset(0, -4))],
+          decoration: const BoxDecoration(
+            color: Color(0xFFFBFDFF),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
           ),
           child: Column(
             children: [
-              // Handle
+              // Top Bar
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 12),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                width: 50, height: 5,
+                decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
               ),
-              // Header with gradient
-              Container(
-                margin: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.md),
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [color.withOpacity(0.15), color.withOpacity(0.05)],
-                  ),
-                  borderRadius: BorderRadius.circular(AppRadius.xl),
-                  border: Border.all(color: color.withOpacity(0.2)),
-                ),
+              // Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(surah['name'],
-                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: color)),
-                          const SizedBox(height: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: color.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(AppRadius.full),
-                            ),
-                            child: Text('${surah['ayat']} Ayat',
-                              style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w700)),
-                          ),
-                        ],
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(surah['name'],
+                          style: GoogleFonts.nunito(fontSize: 24, fontWeight: FontWeight.w900, color: color)),
+                        Text('Membaca Juz Amma ✨',
+                          style: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.blueGrey[300])),
+                      ],
                     ),
                     Text(surah['arabic'],
-                      style: TextStyle(fontSize: 34, color: color, fontWeight: FontWeight.w600, fontFamily: 'Amiri')),
+                      style: TextStyle(fontSize: 38, fontWeight: FontWeight.w900, color: color, fontFamily: 'Amiri')),
                   ],
                 ),
               ),
-              // Verses
+              // Verses List
               Expanded(
                 child: ListView.builder(
                   controller: scrollController,
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   itemCount: verses.length,
                   itemBuilder: (_, i) {
                     final verse = verses[i] as Map;
                     return Container(
-                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(AppRadius.xl),
-                        border: Border.all(color: color.withOpacity(0.15), width: 1.5),
-                        boxShadow: [BoxShadow(color: color.withOpacity(0.08), blurRadius: 10, offset: const Offset(0, 4))],
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(color: color.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                        ],
+                        border: Border.all(color: color.withOpacity(0.1), width: 1.5),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          // Verse Number Badge
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(AppRadius.full)),
-                                child: Text('${i + 1}', style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 12)),
-                              ),
-                              Flexible(
-                                child: Text(
-                                  verse['arabic'],
-                                  textAlign: TextAlign.right,
-                                  textDirection: TextDirection.rtl,
-                                  style: TextStyle(fontSize: 26, color: color, fontFamily: 'Amiri', height: 1.8),
+                                decoration: BoxDecoration(
+                                  color: color.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
+                                child: Text('Ayat ${i + 1}',
+                                  style: GoogleFonts.nunito(fontSize: 11, fontWeight: FontWeight.w900, color: color)),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Text(verse['latin'], style: TextStyle(fontSize: 14, color: color, fontStyle: FontStyle.italic)),
-                          const SizedBox(height: 6),
-                          Text(verse['arti'], style: const TextStyle(fontSize: 13, color: AppColors.textDim, height: 1.4)),
+                          const SizedBox(height: 16),
+                          // Arabic Text (Premium Mushaf Style)
+                          Text(
+                            verse['arabic'],
+                            textAlign: TextAlign.right,
+                            textDirection: TextDirection.rtl,
+                            style: const TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF2C3E50),
+                              fontFamily: 'Amiri',
+                              height: 2.2, // Spacing for Mushaf style
+                              shadows: [Shadow(color: Colors.black12, blurRadius: 1, offset: Offset(0, 1))],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          // Latin
+                          Text(
+                            verse['latin'],
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: color,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          // Meaning
+                          Text(
+                            verse['arti'],
+                            style: GoogleFonts.nunito(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blueGrey[600],
+                              height: 1.5,
+                            ),
+                          ),
                         ],
                       ),
                     );

@@ -7,6 +7,8 @@ import '../widgets/empty_state.dart';
 import '../widgets/loading_screen.dart';
 import '../utils/asset_loader_service.dart';
 import 'premium_doa_detail_screen.dart';
+import 'premium_praktik_detail_screen.dart';
+import 'doa_storybook_screen.dart';
 
 // ─────────────────────────────────────────────────────
 //  Reusable screen for any Islamic brochure category
@@ -326,8 +328,10 @@ class _BrochureCardState extends State<_BrochureCard>
   void _navigate() {
     HapticFeedback.lightImpact();
     
-    // Check if we should use the new Premium UI for Doa
+    // Check folder type for premium UI
     final isDoaFolder = widget.assetPath.contains('/doa/');
+    final isPraktikFolder = widget.assetPath.contains('/praktik/');
+    final isCeritaFolder = widget.assetPath.contains('/cerita/');
     
     Navigator.push(
       context,
@@ -339,6 +343,15 @@ class _BrochureCardState extends State<_BrochureCard>
               imagePath: widget.assetPath,
             );
           }
+          
+          if (isPraktikFolder || isCeritaFolder) {
+            return PremiumPraktikDetailScreen(
+              title: widget.title,
+              imagePath: widget.assetPath,
+              accentColor: widget.accentColor,
+            );
+          }
+
           return IslamicBrochureDetailScreen(
             assetPath: widget.assetPath,
             title: widget.title,
