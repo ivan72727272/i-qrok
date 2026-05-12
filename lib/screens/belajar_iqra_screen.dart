@@ -286,13 +286,13 @@ class _IqraLevelCardState extends State<_IqraLevelCard>
                     child: Container(width: 50, height: 50,
                       decoration: BoxDecoration(color: Colors.white.withOpacity(0.12), shape: BoxShape.circle))),
                   Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Level badge
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(AppRadius.full),
@@ -300,16 +300,16 @@ class _IqraLevelCardState extends State<_IqraLevelCard>
                           child: Text(
                             'Level $numEmoji',
                             style: const TextStyle(
-                              fontSize: 9, fontWeight: FontWeight.w800, color: Colors.white,
+                              fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         // Big level number with glow
                         Center(
                           child: Container(
-                            width: 44,
-                            height: 44,
+                            width: 48,
+                            height: 48,
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.25),
                               shape: BoxShape.circle,
@@ -321,7 +321,7 @@ class _IqraLevelCardState extends State<_IqraLevelCard>
                               child: Text(
                                 '${widget.level.level}',
                                 style: const TextStyle(
-                                  fontSize: 22,
+                                  fontSize: 24,
                                   fontWeight: FontWeight.w900,
                                   color: Colors.white,
                                 ),
@@ -334,46 +334,67 @@ class _IqraLevelCardState extends State<_IqraLevelCard>
                         Text(
                           widget.level.title,
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 16, // Slightly smaller to be safe
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
+                            shadows: [Shadow(color: Colors.black26, blurRadius: 4)],
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 1),
-                        Flexible(
-                          child: Text(
-                            widget.level.description,
-                            style: TextStyle(
-                              fontSize: 8,
-                              color: Colors.white.withOpacity(0.85),
-                              fontWeight: FontWeight.w600,
-                              height: 1.1,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                        const SizedBox(height: 2),
+                        Text(
+                          widget.level.description,
+                          style: TextStyle(
+                            fontSize: 10, // Slightly smaller to be safe
+                            color: Colors.white.withOpacity(0.95),
+                            fontWeight: FontWeight.w600,
+                            height: 1.1,
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 10),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.25),
+                            color: Colors.white.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(AppRadius.full),
+                            border: Border.all(color: Colors.white.withOpacity(0.5)),
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.play_arrow_rounded, size: 10, color: Colors.white.withOpacity(0.9)),
+                              Icon(Icons.play_circle_fill_rounded, size: 14, color: Colors.white),
+                              SizedBox(width: 4),
                               Text('Mulai',
                                 style: TextStyle(
-                                  fontSize: 8, fontWeight: FontWeight.w800,
-                                  color: Colors.white.withOpacity(0.9))),
+                                  fontSize: 10, fontWeight: FontWeight.w800,
+                                  color: Colors.white)),
                             ],
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  
+                  // Mascot - Moved to Positioned to avoid overflow
+                  Positioned(
+                    bottom: 35,
+                    right: 4,
+                    child: IgnorePointer(
+                      child: Opacity(
+                        opacity: 0.8,
+                        child: SizedBox(
+                          height: 55,
+                          child: Image.asset(
+                            widget.index % 2 == 0 
+                              ? 'assets/images/mascot_muslim_boy.png' 
+                              : 'assets/images/mascot_muslim_girl.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],

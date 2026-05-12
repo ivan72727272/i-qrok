@@ -3,17 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../constants/app_constants.dart';
 import '../widgets/islamic_decor.dart';
+import '../data/iqra_data.dart';
 import '../screens/home_screen.dart'; // To use MenuCharacter
 
 class DetailHurufScreen extends StatefulWidget {
-  final String char;
-  final String name;
+  final List<InteractiveLetter> letters;
+  final int initialIndex;
   final Color color;
 
   const DetailHurufScreen({
     super.key,
-    required this.char,
-    required this.name,
+    required this.letters,
+    required this.initialIndex,
     required this.color,
   });
 
@@ -24,6 +25,8 @@ class DetailHurufScreen extends StatefulWidget {
 class _DetailHurufScreenState extends State<DetailHurufScreen> with TickerProviderStateMixin {
   late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
+  late int _currentIndex;
+  
   late AnimationController _pulseCtrl;
   late AnimationController _floatCtrl;
   late AnimationController _bounceCtrl;
@@ -31,6 +34,7 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with TickerProvid
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialIndex;
     _audioPlayer = AudioPlayer();
     _pulseCtrl = AnimationController(duration: const Duration(seconds: 2), vsync: this)..repeat();
     _floatCtrl = AnimationController(duration: const Duration(seconds: 3), vsync: this)..repeat(reverse: true);
@@ -52,30 +56,35 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with TickerProvid
     super.dispose();
   }
 
+  InteractiveLetter get _currentLetter => widget.letters[_currentIndex];
+
   Future<void> _playSound() async {
     _bounceCtrl.forward(from: 0);
     HapticFeedback.mediumImpact();
     try {
-      final fileName = _getFileName(widget.char);
-      if (fileName != null) {
-        await _audioPlayer.stop();
-        await _audioPlayer.play(AssetSource('audio/huruf/$fileName'));
-      }
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource(_currentLetter.audioPath));
     } catch (e) {
       debugPrint("Audio error: $e");
     }
   }
 
-  String? _getFileName(String char) {
-    const mapping = {
-      'أ': 'alif.mp3', 'ب': 'ba.mp3', 'ت': 'ta.mp3', 'ث': 'tha.mp3', 'ج': 'jim.mp3',
-      'ح': 'ha.mp3', 'خ': 'kha.mp3', 'د': 'dal.mp3', 'ذ': 'dhal.mp3', 'ر': 'ra.mp3',
-      'ز': 'zay.mp3', 'س': 'sin.mp3', 'ش': 'shin.mp3', 'ص': 'sad.mp3', 'ض': 'dad.mp3',
-      'ط': 'tta.mp3', 'ظ': 'za.mp3', 'ع': 'ain.mp3', 'غ': 'ghain.mp3', 'ف': 'fa.mp3',
-      'ق': 'qaf.mp3', 'ك': 'kaf.mp3', 'ل': 'lam.mp3', 'م': 'mim.mp3', 'ن': 'nun.mp3',
-      'و': 'waw.mp3', 'هـ': 'hha.mp3', 'ء': 'hamzah.mp3', 'ي': 'ya.mp3',
-    };
-    return mapping[char];
+  void _next() {
+    if (_currentIndex < widget.letters.length - 1) {
+      setState(() {
+        _currentIndex++;
+      });
+      _playSound();
+    }
+  }
+
+  void _previous() {
+    if (_currentIndex > 0) {
+      setState(() {
+        _currentIndex--;
+      });
+      _playSound();
+    }
   }
 
   @override
@@ -105,8 +114,9 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with TickerProvid
                       _buildLargeLetterCard(),
                       const SizedBox(height: 32),
                       _buildLetterName(),
-                      const SizedBox(height: 40),
-                      _buildAudioControls(),
+                      const SizedBox(height: 50),
+                      _buildNavigationControls(),
+                      const SizedBox(height: 100), // Space for mascot
                     ],
                   ),
                 ),
@@ -210,14 +220,13 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with TickerProvid
                     BoxShadow(
                       color: Colors.white,
                       blurRadius: 2,
-                      inset: true,
                     ),
                   ],
                   border: Border.all(color: widget.color.withOpacity(0.2), width: 3),
                 ),
                 child: Center(
                   child: Text(
-                    widget.char,
+                    _currentLetter.char,
                     style: TextStyle(
                       fontSize: 140,
                       fontWeight: FontWeight.w900,
@@ -243,7 +252,7 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with TickerProvid
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
       child: Text(
-        widget.name.toUpperCase(),
+        _currentLetter.name.toUpperCase(),
         style: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.w900,
@@ -254,9 +263,18 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with TickerProvid
     );
   }
 
-  Widget _buildAudioControls() {
-    return Column(
+  Widget _buildNavigationControls() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        // Previous Button
+        _buildNavBtn(
+          icon: Icons.arrow_back_rounded,
+          onTap: _previous,
+          enabled: _currentIndex > 0,
+        ),
+        const SizedBox(width: 24),
+        // Play Button
         GestureDetector(
           onTap: _playSound,
           child: AnimatedBuilder(
@@ -266,29 +284,30 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with TickerProvid
                 alignment: Alignment.center,
                 children: [
                   Container(
-                    width: 70 + (20 * _pulseCtrl.value),
-                    height: 70 + (20 * _pulseCtrl.value),
+                    width: 90 + (20 * _pulseCtrl.value),
+                    height: 90 + (20 * _pulseCtrl.value),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: widget.color.withOpacity(0.2 * (1 - _pulseCtrl.value)),
+                      color: widget.color.withOpacity(0.15 * (1 - _pulseCtrl.value)),
                     ),
                   ),
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 80,
+                    height: 80,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [widget.color, widget.color.withOpacity(0.7)],
+                        colors: [widget.color, widget.color.withOpacity(0.8)],
+                        begin: Alignment.topLeft, end: Alignment.bottomRight,
                       ),
                       shape: BoxShape.circle,
                       boxShadow: [
-                        BoxShadow(color: widget.color.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 5)),
+                        BoxShadow(color: widget.color.withOpacity(0.4), blurRadius: 15, offset: const Offset(0, 5)),
                       ],
                     ),
                     child: Icon(
                       _isPlaying ? Icons.volume_up_rounded : Icons.play_arrow_rounded,
                       color: Colors.white,
-                      size: 32,
+                      size: 40,
                     ),
                   ),
                 ],
@@ -296,16 +315,37 @@ class _DetailHurufScreenState extends State<DetailHurufScreen> with TickerProvid
             },
           ),
         ),
-        const SizedBox(height: 12),
-        Text(
-          _isPlaying ? 'Sedang Diputar...' : 'Ketuk untuk Mendengar',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: widget.color.withOpacity(0.7),
-          ),
+        const SizedBox(width: 24),
+        // Next Button
+        _buildNavBtn(
+          icon: Icons.arrow_forward_rounded,
+          onTap: _next,
+          enabled: _currentIndex < widget.letters.length - 1,
         ),
       ],
+    );
+  }
+
+  Widget _buildNavBtn({required IconData icon, required VoidCallback onTap, required bool enabled}) {
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: enabled ? 1.0 : 0.3,
+        child: Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(color: widget.color.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
+            border: Border.all(color: widget.color.withOpacity(0.3), width: 2),
+          ),
+          child: Icon(icon, color: widget.color, size: 28),
+        ),
+      ),
     );
   }
 }

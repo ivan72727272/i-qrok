@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:math';
 import '../constants/app_constants.dart';
 import '../widgets/islamic_decor.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/loading_screen.dart';
 import '../utils/asset_loader_service.dart';
+import 'premium_doa_detail_screen.dart';
 
 // ─────────────────────────────────────────────────────
 //  Reusable screen for any Islamic brochure category
@@ -323,15 +325,27 @@ class _BrochureCardState extends State<_BrochureCard>
 
   void _navigate() {
     HapticFeedback.lightImpact();
+    
+    // Check if we should use the new Premium UI for Doa
+    final isDoaFolder = widget.assetPath.contains('/doa/');
+    
     Navigator.push(
       context,
       PageRouteBuilder(
-        pageBuilder: (_, anim, __) => IslamicBrochureDetailScreen(
-          assetPath: widget.assetPath,
-          title: widget.title,
-          accentColor: widget.accentColor,
-          categoryIcon: widget.categoryIcon,
-        ),
+        pageBuilder: (_, anim, __) {
+          if (isDoaFolder) {
+            return PremiumDoaDetailScreen(
+              title: widget.title,
+              imagePath: widget.assetPath,
+            );
+          }
+          return IslamicBrochureDetailScreen(
+            assetPath: widget.assetPath,
+            title: widget.title,
+            accentColor: widget.accentColor,
+            categoryIcon: widget.categoryIcon,
+          );
+        },
         transitionsBuilder: (_, anim, __, child) => FadeTransition(
           opacity: anim,
           child: SlideTransition(
@@ -504,67 +518,73 @@ class _IslamicBrochureDetailScreenState extends State<IslamicBrochureDetailScree
     with TickerProviderStateMixin {
   bool _isPressed = false;
   late AnimationController _sparkleCtrl;
+  late AnimationController _floatCtrl;
 
   @override
   void initState() {
     super.initState();
     _sparkleCtrl = AnimationController(duration: const Duration(seconds: 3), vsync: this)..repeat();
+    _floatCtrl = AnimationController(duration: const Duration(seconds: 4), vsync: this)..repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _sparkleCtrl.dispose();
+    _floatCtrl.dispose();
     super.dispose();
   }
 
-  // ─── Dynamic Theme Logic ──────────────────────────────────────────────────
   _PrayerDetailTheme _getTheme() {
     final t = widget.title.toLowerCase();
     if (t.contains('masjid') || t.contains('wudhu')) {
       return _PrayerDetailTheme(
         subtitle: 'Yuk, berdoa saat beribadah di masjid ✨',
         description: 'Berdoa di masjid membawa keberkahan. Jangan lupa baca doa ini agar langkahmu selalu dijaga Allah SWT.',
-        gradient: [const Color(0xFF6BCB77), const Color(0xFF4D96FF)],
+        gradient: [const Color(0xFFE0F7FA), const Color(0xFFB2EBF2), const Color(0xFF80DEEA)],
         bgDecor: [Icons.mosque_rounded, Icons.wb_twilight_rounded],
-        themeColor: const Color(0xFF4D96FF),
+        themeColor: const Color(0xFF4DD0E1),
         bottomIcon: Icons.mosque_rounded,
+        characterAsset: 'assets/images/mascot_muslim_boy.png',
       );
     } else if (t.contains('tidur')) {
       return _PrayerDetailTheme(
         subtitle: 'Tidur jadi lebih tenang dengan doa 🌙',
         description: 'Membaca doa sebelum tidur menjauhkan kita dari mimpi buruk dan membuat istirahat kita dijaga oleh para Malaikat.',
-        gradient: [const Color(0xFF7B61FF), const Color(0xFF1A1C2E)],
+        gradient: [const Color(0xFFE8EAF6), const Color(0xFFC5CAE9), const Color(0xFF9FA8DA)],
         bgDecor: [Icons.brightness_3_rounded, Icons.star_rounded],
-        themeColor: const Color(0xFF7B61FF),
+        themeColor: const Color(0xFF7986CB),
         bottomIcon: Icons.nights_stay_rounded,
+        characterAsset: 'assets/images/mascot_muslim_boy.png',
       );
     } else if (t.contains('makan')) {
       return _PrayerDetailTheme(
         subtitle: 'Belajar adab makan bersama 😊',
         description: 'Makan dengan doa membuat makanan kita menjadi berkah dan tubuh kita menjadi kuat untuk beribadah.',
-        gradient: [const Color(0xFFFF9F45), const Color(0xFFFFD93D)],
+        gradient: [const Color(0xFFFFF3E0), const Color(0xFFFFE0B2), const Color(0xFFFFCC80)],
         bgDecor: [Icons.restaurant_rounded, Icons.fastfood_rounded],
-        themeColor: const Color(0xFFFF9F45),
+        themeColor: const Color(0xFFFFB74D),
         bottomIcon: Icons.flatware_rounded,
+        characterAsset: 'assets/images/mascot_muslim_girl.png',
       );
     } else if (t.contains('orang tua')) {
       return _PrayerDetailTheme(
         subtitle: 'Sayangi ayah dan ibu lewat doa ❤️',
         description: 'Doa untuk orang tua adalah bukti cinta kita. Semoga Allah selalu menyayangi mereka seperti mereka menyayangi kita.',
-        gradient: [const Color(0xFFFF8A80), const Color(0xFFC77DFF)],
+        gradient: [const Color(0xFFFFEBEE), const Color(0xFFFFCDD2), const Color(0xFFEF9A9A)],
         bgDecor: [Icons.favorite_rounded, Icons.auto_awesome_rounded],
-        themeColor: const Color(0xFFFF8A80),
+        themeColor: const Color(0xFFE57373),
         bottomIcon: Icons.family_restroom_rounded,
+        characterAsset: 'assets/images/mascot_muslim_girl.png',
       );
     }
-    // Default
     return _PrayerDetailTheme(
       subtitle: 'Belajar dengan penuh semangat 🌟',
       description: 'Mari amalkan doa ini dalam setiap kegiatanmu agar Allah selalu memberikan kemudahan dan pahala yang melimpah.',
-      gradient: [const Color(0xFF6BCB77), const Color(0xFFFFD93D)],
+      gradient: [const Color(0xFFF1F8E9), const Color(0xFFDCEDC8), const Color(0xFFC5E1A5)],
       bgDecor: [Icons.auto_awesome_rounded, Icons.wb_sunny_rounded],
-      themeColor: widget.accentColor,
+      themeColor: const Color(0xFF8BC34A),
       bottomIcon: Icons.menu_book_rounded,
+      characterAsset: 'assets/images/mascot_muslim_boy.png',
     );
   }
 
@@ -573,118 +593,38 @@ class _IslamicBrochureDetailScreenState extends State<IslamicBrochureDetailScree
     final theme = _getTheme();
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF9FBF9),
       body: Stack(
         children: [
-          // ─── Background Decor ──────────────────────────────────────────────
-          Positioned(top: -40, left: -40,
-            child: Container(width: 250, height: 250,
-              decoration: BoxDecoration(color: theme.themeColor.withOpacity(0.06), shape: BoxShape.circle))),
-          Positioned(bottom: 50, right: -60,
-            child: Container(width: 200, height: 200,
-              decoration: BoxDecoration(color: theme.themeColor.withOpacity(0.04), shape: BoxShape.circle))),
-          
-          // Background Dynamic Icons
-          Positioned(top: 150, right: 20, 
-            child: Opacity(opacity: 0.05, child: Icon(theme.bgDecor[0], size: 60, color: theme.themeColor))),
-          Positioned(bottom: 150, left: 20, 
-            child: Opacity(opacity: 0.04, child: Icon(theme.bgDecor[1], size: 100, color: theme.themeColor))),
-          
-          FloatingStars(color: theme.themeColor.withOpacity(0.3)),
-          
-          // Floating Sparkles
-          ...List.generate(5, (i) => _buildSparkle(i)),
+          // ─── Background Pattern ───────────────────────────────────────────
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.03,
+              child: Image.asset('assets/images/cute_decorations.png', repeat: ImageRepeat.repeat, scale: 2),
+            ),
+          ),
 
-          // ─── Main Content ──────────────────────────────────────────────────
-          Column(
-            children: [
-              _buildDetailHeader(context, theme),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      // Poster with Interaction
-                      GestureDetector(
-                        onTapDown: (_) => setState(() => _isPressed = true),
-                        onTapUp: (_) => setState(() => _isPressed = false),
-                        onTapCancel: () => setState(() => _isPressed = false),
-                        child: AnimatedScale(
-                          scale: _isPressed ? 0.98 : 1.0,
-                          duration: const Duration(milliseconds: 200),
-                          child: Hero(
-                            tag: widget.assetPath,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(32),
-                                border: Border.all(color: Colors.white, width: 10), // Frame Putih Creamy
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: theme.themeColor.withOpacity(0.15),
-                                    blurRadius: 40,
-                                    offset: const Offset(0, 15),
-                                    spreadRadius: 2,
-                                  ),
-                                  if (_isPressed)
-                                    BoxShadow(
-                                      color: theme.themeColor.withOpacity(0.2),
-                                      blurRadius: 20,
-                                      spreadRadius: 5,
-                                    ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(22),
-                                child: Image.asset(
-                                  widget.assetPath,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (_, __, ___) => _buildFallback(context),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 32),
-                      
-                      // Hint Label
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppRadius.full),
-                          boxShadow: [
-                            BoxShadow(color: theme.themeColor.withOpacity(0.05), blurRadius: 10),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.auto_awesome_rounded, size: 14, color: theme.themeColor.withOpacity(0.5)),
-                            const SizedBox(width: 8),
-                            Text(
-                              'MasyaAllah! Ayo Diamalkan ✨',
-                              style: TextStyle(
-                                fontSize: 12, 
-                                fontWeight: FontWeight.w800, 
-                                color: theme.themeColor.withOpacity(0.7),
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+          // ─── Floating Elements ────────────────────────────────────────────
+          ...List.generate(8, (i) => _buildFloatingDecor(i, theme.themeColor)),
 
-                      const SizedBox(height: 24),
+          // ─── Main Scrollable Area ─────────────────────────────────────────
+          CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              // ─── Organic Curved Header ─────────────────────────────────────
+              SliverToBoxAdapter(
+                child: _buildOrganicHeader(context, theme),
+              ),
 
-                      // Bottom Explanation Card
-                      _buildBottomCard(theme),
-                    ],
-                  ),
+              // ─── Main Content Card ─────────────────────────────────────────
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    _buildMainStoryCard(theme),
+                    const SizedBox(height: 30),
+                    _buildInteractiveExplainer(theme),
+                  ]),
                 ),
               ),
             ],
@@ -694,70 +634,276 @@ class _IslamicBrochureDetailScreenState extends State<IslamicBrochureDetailScree
     );
   }
 
-  Widget _buildSparkle(int index) {
-    final rand = Random(index);
-    final top = 100.0 + rand.nextDouble() * 500;
-    final left = rand.nextDouble() * 300;
-    
-    return AnimatedBuilder(
-      animation: _sparkleCtrl,
-      builder: (context, child) {
-        final offset = sin((_sparkleCtrl.value * 2 * pi) + (index * 0.5)) * 10;
-        return Positioned(
-          top: top + offset,
-          left: left,
-          child: Opacity(
-            opacity: (0.3 + sin(_sparkleCtrl.value * pi) * 0.4).clamp(0, 1),
-            child: Icon(Icons.auto_awesome_rounded, size: 12 + rand.nextDouble() * 10, color: Colors.white.withOpacity(0.5)),
+  Widget _buildOrganicHeader(BuildContext context, _PrayerDetailTheme theme) {
+    return Container(
+      height: 240,
+      child: Stack(
+        children: [
+          // Curved Background
+          ClipPath(
+            clipper: _HeaderClipper(),
+            child: Container(
+              height: 220,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [theme.gradient[0], theme.gradient[2]],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.themeColor.withOpacity(0.2),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+            ),
           ),
-        );
-      },
+
+          // Glowing effect
+          Positioned(
+            top: -20, right: -20,
+            child: Container(
+              width: 150, height: 150,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [BoxShadow(color: Colors.white.withOpacity(0.4), blurRadius: 80)],
+              ),
+            ),
+          ),
+
+          // Header Content
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      // Soft Back Button
+                      Material(
+                        color: Colors.white.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(20),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () { HapticFeedback.lightImpact(); Navigator.pop(context); },
+                          child: const Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 22),
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      // Floating Mascot
+                      AnimatedBuilder(
+                        animation: _floatCtrl,
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(0, 5 * sin(_floatCtrl.value * 2 * pi)),
+                            child: child,
+                          );
+                        },
+                        child: Container(
+                          height: 80,
+                          child: Image.asset(theme.characterAsset, fit: BoxFit.contain),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      fontSize: 28, fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 2)),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    theme.subtitle,
+                    style: TextStyle(
+                      fontSize: 13, color: Colors.white.withOpacity(0.95),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Floating Mini Decor
+          Positioned(
+            bottom: 30, right: 80,
+            child: Opacity(opacity: 0.6, child: Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 32)),
+          ),
+          Positioned(
+            bottom: 50, left: 140,
+            child: Opacity(opacity: 0.4, child: Icon(Icons.cloud_rounded, color: Colors.white, size: 40)),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildBottomCard(_PrayerDetailTheme theme) {
+  Widget _buildMainStoryCard(_PrayerDetailTheme theme) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: theme.themeColor.withOpacity(0.1), width: 1.5),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
-            color: theme.themeColor.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: theme.themeColor.withOpacity(0.1),
+            blurRadius: 40,
+            offset: const Offset(0, 20),
+            spreadRadius: 5,
           ),
         ],
+      ),
+      child: CustomPaint(
+        painter: _DashedPainter(color: theme.themeColor.withOpacity(0.2)),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: [
+              // The Poster / Image Area
+              Hero(
+                tag: widget.assetPath,
+                child: Container(
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 0.85,
+                    child: Stack(
+                      children: [
+                        Image.asset(
+                          widget.assetPath,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => _buildFallback(context),
+                        ),
+                        // Soft Light Overlay
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.white.withOpacity(0.1), Colors.transparent],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+              
+              // Decorative Sparkle
+              Icon(Icons.auto_awesome_rounded, color: theme.themeColor.withOpacity(0.3), size: 24),
+              
+              const SizedBox(height: 16),
+              
+              // Text Content Area
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    _buildTextSection('Arabic', '✨', widget.title, theme),
+                    const SizedBox(height: 20),
+                    _buildTextSection('Latin', '📖', 'Klik poster untuk melihat detail', theme),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextSection(String label, String icon, String content, _PrayerDetailTheme theme) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(
+            color: theme.themeColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(icon, style: const TextStyle(fontSize: 12)),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11, fontWeight: FontWeight.w900,
+                  color: theme.themeColor,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          content,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 15, fontWeight: FontWeight.w700,
+            color: theme.themeColor.withOpacity(0.8),
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInteractiveExplainer(_PrayerDetailTheme theme) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: theme.gradient[0].withOpacity(0.6),
+        borderRadius: BorderRadius.circular(35),
+        border: Border.all(color: Colors.white, width: 3),
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: theme.themeColor.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(theme.bottomIcon, color: theme.themeColor, size: 28),
+            padding: const EdgeInsets.all(15),
+            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+            child: Icon(theme.bottomIcon, color: theme.themeColor, size: 30),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
-            widget.title,
+            'Tahukah Kamu?',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              color: theme.themeColor.withOpacity(0.9),
+              fontSize: 18, fontWeight: FontWeight.w900,
+              color: theme.themeColor,
             ),
           ),
           const SizedBox(height: 12),
           Text(
             theme.description,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textDim,
-              fontWeight: FontWeight.w600,
+            style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w600,
+              color: theme.themeColor.withOpacity(0.7),
               height: 1.6,
             ),
           ),
@@ -766,108 +912,82 @@ class _IslamicBrochureDetailScreenState extends State<IslamicBrochureDetailScree
     );
   }
 
-  Widget _buildDetailHeader(BuildContext context, _PrayerDetailTheme theme) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: theme.gradient,
-        ),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(32),
-          bottomRight: Radius.circular(32),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: theme.themeColor.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Stack(
-          children: [
-            // Decor Sparkles
-            Positioned(top: -10, right: 20, child: FloatingStarSingle(size: 20, color: Colors.white)),
-            Positioned(top: 30, right: 60, child: FloatingStarSingle(size: 14, color: Colors.white)),
-            Positioned(bottom: -15, left: 40, child: Opacity(opacity: 0.1, child: Icon(Icons.cloud_rounded, size: 70, color: Colors.white))),
-            
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.sm, AppSpacing.lg, 24),
-              child: Row(
-                children: [
-                  // Back Button
-                  Material(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(16),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () { HapticFeedback.lightImpact(); Navigator.pop(context); },
-                      child: const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          widget.title,
-                          style: const TextStyle(
-                            fontSize: 20, 
-                            fontWeight: FontWeight.w900, 
-                            color: Colors.white,
-                            shadows: [Shadow(color: Colors.black26, blurRadius: 4)],
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          theme.subtitle,
-                          style: TextStyle(
-                            fontSize: 11, 
-                            color: Colors.white.withOpacity(0.9), 
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+  Widget _buildFloatingDecor(int i, Color color) {
+    final rand = Random(i);
+    return AnimatedBuilder(
+      animation: _sparkleCtrl,
+      builder: (context, child) {
+        final val = (_sparkleCtrl.value + i * 0.1) % 1.0;
+        return Positioned(
+          top: rand.nextDouble() * 800,
+          left: rand.nextDouble() * 400,
+          child: Opacity(
+            opacity: sin(val * pi) * 0.4,
+            child: Icon(
+              i % 2 == 0 ? Icons.star_rounded : Icons.auto_awesome_rounded,
+              size: 10 + rand.nextDouble() * 15,
+              color: color.withOpacity(0.3),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildFallback(BuildContext context) {
     return Container(
-      width: double.infinity,
-      height: 300,
-      color: widget.accentColor.withOpacity(0.1),
+      color: Colors.white,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(widget.categoryIcon, style: const TextStyle(fontSize: 64)),
             const SizedBox(height: 12),
-            const Text('Gambar tidak tersedia', 
-              style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDim)),
+            const Text('Memuat poster lucu...', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26)),
           ],
         ),
       ),
     );
   }
+}
+
+class _HeaderClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+    path.lineTo(0, size.height - 50);
+    var firstControlPoint = Offset(size.width / 4, size.height);
+    var firstEndPoint = Offset(size.width / 2, size.height - 30);
+    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy, firstEndPoint.dx, firstEndPoint.dy);
+    var secondControlPoint = Offset(size.width - (size.width / 4), size.height - 60);
+    var secondEndPoint = Offset(size.width, size.height - 20);
+    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy, secondEndPoint.dx, secondEndPoint.dy);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class _DashedPainter extends CustomPainter {
+  final Color color;
+  _DashedPainter({required this.color});
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color..strokeWidth = 2..style = PaintingStyle.stroke;
+    final path = Path()..addRRect(RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, size.width, size.height), const Radius.circular(40)));
+    var dashWidth = 8.0, dashSpace = 8.0, distance = 0.0;
+    for (var pathMetric in path.computeMetrics()) {
+      while (distance < pathMetric.length) {
+        canvas.drawPath(pathMetric.extractPath(distance, distance + dashWidth), paint);
+        distance += dashWidth + dashSpace;
+      }
+      distance = 0.0;
+    }
+  }
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
 class _PrayerDetailTheme {
@@ -877,6 +997,7 @@ class _PrayerDetailTheme {
   final List<IconData> bgDecor;
   final Color themeColor;
   final IconData bottomIcon;
+  final String characterAsset;
 
   _PrayerDetailTheme({
     required this.subtitle,
@@ -885,6 +1006,7 @@ class _PrayerDetailTheme {
     required this.bgDecor,
     required this.themeColor,
     required this.bottomIcon,
+    required this.characterAsset,
   });
 }
 
