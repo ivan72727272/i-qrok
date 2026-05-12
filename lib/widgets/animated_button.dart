@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/sound_service.dart';
 
 class AnimatedButton extends StatefulWidget {
   final Widget child;
@@ -46,6 +47,7 @@ class _AnimatedButtonState extends State<AnimatedButton> with SingleTickerProvid
       _controller.forward();
     }
     HapticFeedback.lightImpact();
+    SoundService.playPop();
   }
 
   void _handleTapUp(TapUpDetails details) {

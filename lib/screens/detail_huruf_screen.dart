@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../constants/app_constants.dart';
-import '../widgets/audio_button.dart';
-import '../widgets/custom_app_bar.dart';
+import '../widgets/islamic_decor.dart';
+import '../screens/home_screen.dart'; // To use MenuCharacter
 
 class DetailHurufScreen extends StatefulWidget {
   final String char;
@@ -21,200 +21,291 @@ class DetailHurufScreen extends StatefulWidget {
   State<DetailHurufScreen> createState() => _DetailHurufScreenState();
 }
 
-class _DetailHurufScreenState extends State<DetailHurufScreen> with SingleTickerProviderStateMixin {
+class _DetailHurufScreenState extends State<DetailHurufScreen> with TickerProviderStateMixin {
   late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
-  bool _isLoading = false;
-
-  final Map<String, String> _audioMapping = {
-    'أ': 'alif.mp3', 'ب': 'ba.mp3', 'ت': 'ta.mp3', 'ث': 'tha.mp3', 'ج': 'jim.mp3',
-    'ح': 'ha.mp3', 'خ': 'kha.mp3', 'د': 'dal.mp3', 'ذ': 'dhal.mp3', 'ر': 'ra.mp3',
-    'ز': 'zay.mp3', 'س': 'sin.mp3', 'ش': 'shin.mp3', 'ص': 'sad.mp3', 'ض': 'dad.mp3',
-    'ط': 'tta.mp3', 'ظ': 'za.mp3', 'ع': 'ain.mp3', 'غ': 'ghain.mp3', 'ف': 'fa.mp3',
-    'ق': 'qaf.mp3', 'ك': 'kaf.mp3', 'ل': 'lam.mp3', 'م': 'mim.mp3', 'ن': 'nun.mp3',
-    'و': 'waw.mp3', 'هـ': 'hha.mp3', 'ء': 'hamzah.mp3', 'ي': 'ya.mp3',
-  };
+  late AnimationController _pulseCtrl;
+  late AnimationController _floatCtrl;
+  late AnimationController _bounceCtrl;
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _playSound();
-    });
+    _pulseCtrl = AnimationController(duration: const Duration(seconds: 2), vsync: this)..repeat();
+    _floatCtrl = AnimationController(duration: const Duration(seconds: 3), vsync: this)..repeat(reverse: true);
+    _bounceCtrl = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
 
     _audioPlayer.onPlayerStateChanged.listen((state) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = state == PlayerState.playing;
-        });
-      }
+      if (mounted) setState(() => _isPlaying = state == PlayerState.playing);
     });
 
-    _audioPlayer.onPlayerComplete.listen((event) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = false;
-          _isLoading = false;
-        });
-      }
-    });
+    Future.delayed(const Duration(milliseconds: 300), _playSound);
   }
 
   @override
   void dispose() {
     _audioPlayer.dispose();
+    _pulseCtrl.dispose();
+    _floatCtrl.dispose();
+    _bounceCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _playSound() async {
-    if (_isLoading || _isPlaying) return;
-    setState(() => _isLoading = true);
+    _bounceCtrl.forward(from: 0);
+    HapticFeedback.mediumImpact();
     try {
-      String? fileName = _audioMapping[widget.char];
+      final fileName = _getFileName(widget.char);
       if (fileName != null) {
-        final fullPath = 'assets/audio/huruf/$fileName';
-        
-        // Check file existence
-        await rootBundle.load(fullPath);
-
         await _audioPlayer.stop();
-        await _audioPlayer.play(AssetSource('audio/huruf/$fileName')).timeout(
-          const Duration(seconds: 3),
-          onTimeout: () {
-            throw Exception('Playback Timeout');
-          },
-        );
-      } else {
-        throw Exception('Audio not mapped');
+        await _audioPlayer.play(AssetSource('audio/huruf/$fileName'));
       }
     } catch (e) {
-      debugPrint("Audio tidak ditemukan: $e");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Audio belum tersedia 😊'),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+      debugPrint("Audio error: $e");
     }
   }
 
+  String? _getFileName(String char) {
+    const mapping = {
+      'أ': 'alif.mp3', 'ب': 'ba.mp3', 'ت': 'ta.mp3', 'ث': 'tha.mp3', 'ج': 'jim.mp3',
+      'ح': 'ha.mp3', 'خ': 'kha.mp3', 'د': 'dal.mp3', 'ذ': 'dhal.mp3', 'ر': 'ra.mp3',
+      'ز': 'zay.mp3', 'س': 'sin.mp3', 'ش': 'shin.mp3', 'ص': 'sad.mp3', 'ض': 'dad.mp3',
+      'ط': 'tta.mp3', 'ظ': 'za.mp3', 'ع': 'ain.mp3', 'غ': 'ghain.mp3', 'ف': 'fa.mp3',
+      'ق': 'qaf.mp3', 'ك': 'kaf.mp3', 'ل': 'lam.mp3', 'م': 'mim.mp3', 'ن': 'nun.mp3',
+      'و': 'waw.mp3', 'هـ': 'hha.mp3', 'ء': 'hamzah.mp3', 'ي': 'ya.mp3',
+    };
+    return mapping[char];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              widget.color.withOpacity(0.08),
-              AppColors.background,
-              widget.color.withOpacity(0.05),
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
+      backgroundColor: const Color(0xFFFFFDF7),
+      body: Stack(
+        children: [
+          // Background soft blobs
+          Positioned(top: -50, right: -50,
+            child: Container(width: 250, height: 250,
+              decoration: BoxDecoration(color: widget.color.withOpacity(0.08), shape: BoxShape.circle))),
+          Positioned(bottom: 100, left: -60,
+            child: Container(width: 200, height: 200,
+              decoration: BoxDecoration(color: widget.color.withOpacity(0.06), shape: BoxShape.circle))),
+          const FloatingStars(),
+
+          Column(
             children: [
-              CustomAppBar(
-                title: 'Detail Huruf',
-                subtitle: 'Suara dan Detail',
-                backgroundColor: Colors.transparent,
-                foregroundColor: widget.color,
-              ),
+              _buildHeader(context),
               Expanded(
                 child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: AppSpacing.lg),
-                      // Letter Container
-                      Hero(
-                        tag: 'letter-${widget.char}',
-                        child: Container(
-                          width: 280,
-                          height: 280,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                            boxShadow: [
-                              BoxShadow(
-                                color: widget.color.withOpacity(0.15),
-                                blurRadius: 40,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: _playSound,
-                              borderRadius: BorderRadius.circular(140),
-                              splashColor: widget.color.withOpacity(0.3),
-                              highlightColor: Colors.transparent,
-                              child: Center(
-                                child: Text(
-                                  widget.char,
-                                  style: TextStyle(
-                                    fontSize: 160,
-                                    fontWeight: FontWeight.bold,
-                                    color: widget.color,
-                                    shadows: [
-                                      Shadow(
-                                        color: widget.color.withOpacity(0.3),
-                                        blurRadius: 20,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xxl),
-                      // Letter Name
-                      Text(
-                        widget.name,
-                        style: TextStyle(
-                          fontSize: 54,
-                          fontWeight: FontWeight.bold,
-                          color: widget.color.withOpacity(0.8),
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xxl * 1.5),
-                      // Action Button
-                      AudioButton(
-                        isPlaying: _isPlaying,
-                        isLoading: _isLoading,
-                        onTap: _playSound,
-                        color: widget.color,
-                      ),
-                      const SizedBox(height: AppSpacing.xxl),
+                      const SizedBox(height: 40),
+                      _buildLargeLetterCard(),
+                      const SizedBox(height: 32),
+                      _buildLetterName(),
+                      const SizedBox(height: 40),
+                      _buildAudioControls(),
                     ],
                   ),
                 ),
               ),
             ],
           ),
+          
+          // Mascot in bottom corner
+          Positioned(
+            bottom: -20,
+            right: -20,
+            child: SizedBox(
+              width: 150,
+              height: 150,
+              child: Opacity(
+                opacity: 0.9,
+                child: MenuCharacter(name: 'Ahmad', color: widget.color),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft, end: Alignment.bottomRight,
+          colors: [widget.color, widget.color.withOpacity(0.7)],
+        ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(AppRadius.xl),
+          bottomRight: Radius.circular(AppRadius.xl),
+        ),
+        boxShadow: [BoxShadow(color: widget.color.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 8))],
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.sm, AppSpacing.lg, 24),
+          child: Row(
+            children: [
+              Material(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  onTap: () => Navigator.pop(context),
+                  child: const Padding(padding: EdgeInsets.all(10),
+                    child: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20)),
+                ),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('✨ Belajar Huruf',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white,
+                        shadows: [Shadow(color: Colors.black26, blurRadius: 4)])),
+                    Text('Mari mengenal huruf Hijaiyah!',
+                      style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLargeLetterCard() {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_floatCtrl, _bounceCtrl]),
+      builder: (context, child) {
+        final floatOffset = 10 * _floatCtrl.value;
+        final bounceScale = 1.0 + (0.1 * (1.0 - (1.0 - _bounceCtrl.value).abs()));
+        
+        return Transform.translate(
+          offset: Offset(0, floatOffset),
+          child: Transform.scale(
+            scale: bounceScale,
+            child: GestureDetector(
+              onTap: _playSound,
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: widget.color.withOpacity(0.2),
+                      blurRadius: 40,
+                      spreadRadius: 5,
+                    ),
+                    BoxShadow(
+                      color: Colors.white,
+                      blurRadius: 2,
+                      inset: true,
+                    ),
+                  ],
+                  border: Border.all(color: widget.color.withOpacity(0.2), width: 3),
+                ),
+                child: Center(
+                  child: Text(
+                    widget.char,
+                    style: TextStyle(
+                      fontSize: 140,
+                      fontWeight: FontWeight.w900,
+                      color: widget.color,
+                      fontFamily: 'Amiri',
+                      shadows: [Shadow(color: widget.color.withOpacity(0.3), blurRadius: 20)],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLetterName() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+      decoration: BoxDecoration(
+        color: widget.color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(AppRadius.full),
+      ),
+      child: Text(
+        widget.name.toUpperCase(),
+        style: TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w900,
+          color: widget.color,
+          letterSpacing: 4,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAudioControls() {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: _playSound,
+          child: AnimatedBuilder(
+            animation: _pulseCtrl,
+            builder: (context, child) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 70 + (20 * _pulseCtrl.value),
+                    height: 70 + (20 * _pulseCtrl.value),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: widget.color.withOpacity(0.2 * (1 - _pulseCtrl.value)),
+                    ),
+                  ),
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [widget.color, widget.color.withOpacity(0.7)],
+                      ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(color: widget.color.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 5)),
+                      ],
+                    ),
+                    child: Icon(
+                      _isPlaying ? Icons.volume_up_rounded : Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 32,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          _isPlaying ? 'Sedang Diputar...' : 'Ketuk untuk Mendengar',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: widget.color.withOpacity(0.7),
+          ),
+        ),
+      ],
     );
   }
 }

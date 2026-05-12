@@ -23,6 +23,13 @@ class AppColors {
   static const Color textMain = Color(0xFF37474F);
   static const Color textDim = Color(0xFF78909C);
   static const Color cardShadow = Color(0x15000000); // Shadow sedikit lebih pekat tapi transparan
+
+  // Night Mode Colors
+  static const Color nightBackground = Color(0xFF1A1C2E); // Navy malam
+  static const Color nightCard = Color(0xFF262940); // Card malam
+  static const Color nightPrimary = Color(0xFF7B61FF); // Ungu malam
+  static const Color nightAccent = Color(0xFFC77DFF); // Pink malam
+  static const Color nightText = Color(0xFFE0E0E0);
 }
 
 class AppSpacing {
